@@ -1,0 +1,37 @@
+CRUD app
+
+"""
+Participant Object
+    -f_name
+    -l_name
+    -email
+    -phone
+    -school
+    
+    methods
+    get_full_name
+
+
+
+
+Serializer
+    eg. {f_name: 'him', l_name:'yad'}
+
+
+interface:
+
+Create Object
+    - participant attributes
+Read Object
+    - supply id or field
+    
+Update
+    - update an attribute
+    - update object - add an attribute
+    
+Delete OBject
+    - delete by field or about attribute
+
+Filters
+    - Filter by category
+""" 
