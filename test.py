@@ -10,15 +10,19 @@ a column represents a key in the databse and values are analgous
 
 note: in flask-pymongo, the name of this file must be the same name as the databse at hand, in this case, test.
 """
-
+#creating a person instance
 b = Person()
+
 app = Flask(__name__) 
 mongo = PyMongo(app)
 
 @app.route('/')
 def home_page():
+    #we can get info from a mongo document
+    print str(mongo.db.sites.find_one({}))
     return render_template('render.html')
 
+#testing a post method from the form called "render.html" (this is still in progress)
 @app.route("/add", methods=['POST'])
 def addh():
     print "hello"
