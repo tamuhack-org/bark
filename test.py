@@ -10,6 +10,7 @@ a column represents a key in the databse and values are analgous
 
 note: in flask-pymongo, the name of this file must be the same name as the databse at hand, in this case, test.
 """
+
 #creating a person instance 
 b = Person() 
 app = Flask(__name__) 
