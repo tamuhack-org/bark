@@ -38,6 +38,8 @@ Participant Object
 
 Serializer
     eg. {f_name: 'him', l_name:'yad'}
+    ^ object.__dict__ already gives you this sort of dictionary
+    ^ json.dumps(object.__dict__) will make it a json
 
 
 interface:
