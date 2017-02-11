@@ -1,5 +1,11 @@
+#single underscore is a private variable
+#double underscore is a "hella" private variable that you should never override/touch
+
 class Person:
     def __init__(self, *initial_data, **kwargs): 
+        self.fname = None
+        self.lname = None
+        self.email = None
     
     #^ we are gonna wanna use kwargs.
     #^ http://stackoverflow.com/questions/2466191/set-attributes-from-dictionary-in-python 

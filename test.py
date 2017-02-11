@@ -1,4 +1,4 @@
-from resources import Person
+from resources import person
 from flask import Flask, render_template, request, redirect
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
@@ -12,7 +12,7 @@ note: in flask-pymongo, the name of this file must be the same name as the datab
 """
 
 #creating a person instance 
-b = Person() 
+b = person.Person() 
 app = Flask(__name__) 
 mongo = PyMongo(app)
 
@@ -26,16 +26,16 @@ def home_page():
 #testing a post method from the form called "render.html" (this is still in progress)
 @app.route("/add", methods=['POST'])
 def add():
-    fname = request.form['fname-add']
-    lname = request.form['lname-add']
-    email = request.form['email-add']
+    fname = request.form['fname_add']
+    lname = request.form['lname_add']
+    email = request.form['email_add']
     mongo.db.sites.insert({"first_name": fname, "last_name": lname, "email": email})
     count = mongo.db.sites.count({})
     return render_template('render.html', count=count)
 
 @app.route('/delete', methods=['POST'])
 def delete():
-    b = request.form['fname-delete']
+    b = request.form['fname_delete']
     mongo.db.sites.delete_one({"first_name": b})
     count = mongo.db.sites.count({})
     return render_template('render.html', count=count)
