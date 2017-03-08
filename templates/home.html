@@ -1,0 +1,47 @@
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<meta name="description" content="">
+    	<meta name="author" content="">
+    	<link rel="icon" href="http://getbootstrap.com/favicon.ico">
+    	<title>TAMUhack Registration</title>
+    	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  	</head>
+
+  <body>
+	<div class="jumbotron jumbotron-fluid">
+		<div class="container">
+			<h1>TAMUhack Registration</h1>
+			<p class="lead">Total Students: {{count}}</p>
+		</div>
+	</div>
+	<div class="container">
+	<div class="col-md-4 text-center">
+		<form action="/search" method="Post">
+			<button type="submit" name="search" value="search" class="thumbnail" style="width: 500px">
+				<h2>Search &amp; Edit All Applications</h2>
+				<h4><span class="label label-warning label-as-badge">TAMUhack Applicants</span></h4>
+			</button>
+		</form>
+		<form action="/switch" method="Post">
+			<button type="submit" name="switch" value="add" class="thumbnail" style="width: 500px">
+				<h2>Add Applicant</h2>
+				<h4><span class="label label-warning label-as-badge">TAMUhack Applicants</span></h4>
+			</button>
+		</form>
+		<form action="#" method="Post">
+			<button type="submit" name="switch" value="delete" class="thumbnail" style="width: 500px">
+				<h2>Other Option</h2>
+				<h4><span class="label label-warning label-as-badge">TAMUhack Applicants</span></h4>
+			</button>
+		</form>
+	</div>
+	</div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+</body>
+</html>

@@ -1,0 +1,51 @@
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    	<meta name="viewport" content="width=device-width, initial-scale=1">
+    	<meta name="description" content="">
+    	<meta name="author" content="">
+    	<link rel="icon" href="http://getbootstrap.com/favicon.ico">
+    	<title>TAMUhack Registration</title>
+    	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  	</head>
+
+  <body>
+	<div class="jumbotron jumbotron-fluid">
+		<div class="container">
+			<h1 class="display-3">Results<h1>
+			<p class="lead">Number of Entries: {{count}}</p>
+		</div>
+	</div>
+    <div class="container">
+
+	<div class = "table-responsive">
+		<table class = "table">
+				<thead>
+					<tr>
+						<th>First Name</th>
+						<th>Last Name</th>
+						<th>Email</th>
+						<th>Delete</th>
+					</tr>
+				</thead>
+			<tbody>
+				{% for item in entries %}
+				<tr>
+					<td>{{item['first_name']}}</td>
+					<td>{{item['last_name']}}</td>
+					<td>{{item['email']}}</td>
+					<td><button>delete</button></td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>  
+	</div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+</body>
+</html>
+
