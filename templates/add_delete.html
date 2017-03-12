@@ -1,82 +1,86 @@
 <html lang="en">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-    	<meta name="viewport" content="width=device-width, initial-scale=1">
-    	<meta name="description" content="">
-    	<meta name="author" content="">
-    	<link rel="icon" href="http://getbootstrap.com/favicon.ico">
-    	<title>TAMUhack Registration</title>
-    	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-  	</head>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+  <title>TAMUhack Registration</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        rel="stylesheet">
+</head>
 
-  <body>
-    <div class="container"> <div>
-        <h1>TAMUhack Registration System</h1>
-		  <hr>
+<body>
+<div class="container">
+  <div>
+    <h1>TAMUhack Registration System</h1>
+    <hr>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div>
+        <h3>Adding a member</h3>
       </div>
-	<div class="row">
-	<div class="col-md-6">
-		  <div>
-			<h3>Adding a member</h3>
-		  </div>
-		  <hr>
-			<form action="/add" method="Post">
-				<div class="form-group">
-					<label for="fname">First Name</label>
-					<input type="fname" class="form-control" name="fname_add"  placeholder="First Name">
-					<small id="fnamehelp" class="form-text text-muted">Unless your name is Himank</small>
-				</div>
-				<div class="form-group">
-					<label for="lname">Last Name</label>
-					<input type="lname" class="form-control" name="lname_add" placeholder="Last Name">
-				</div>
-				<div class="form-group">
-					<label for="email">Email</label>
-					<input type="email" class="form-control" name="email_add" placeholder="Email">
-				</div>
-				<button type="submit" name="submit" class="btn btn-primary">Add</button>
-			</form>
-	</div>
-	<div class="col-md-6">
-		  <div>
-			<h3>Deleting a member</h3>
-		  </div>
-		  <hr>
-			<form action="/delete" method="Post">
-				<div class="form-group">
-					<label for="fname">First Name</label>
-					<input type="fname" class="form-control" name="fname_delete" placeholder="First Name">
-					<small id="fnamehelp" class="form-text text-muted">Unless your name is Himank</small>
-				</div>
-				<button type="submit" class="btn btn-primary" name="submit" value="REFRESH">Delete</button>
-			</form>
-	</div>
-	</div>
-	<hr>
-	<!--<div class = "table-responsive">-->
-		<!--<table class = "table">-->
-				<!--<thead>-->
-					<!--<tr>-->
-						<!--<th>First Name</th>-->
-						<!--<th>Last Name</th>-->
-						<!--<th>Email</th>-->
-					<!--</tr>-->
-				<!--</thead>-->
-			<!--<tbody>-->
-			<!--<tr>-->
-				<!--<td>Product4</td>-->
-				<!--<td>20/10/2013</td>-->
-				<!--<td>Declined</td>-->
-			<!--</tr>-->
-			<!--</tbody>-->
-		<!--</table>-->
-	<!--</div>  -->
-		<h3>Number of Entries: {{count}}</h3>
-	</div>
+      <hr>
+      <form action="/modify" method="Post">
+        <input class="form-control" name="action" value="add" type="hidden">
+        <div class="form-group">
+          <label for="fname">First Name</label>
+          <input class="form-control" name="fname_add" placeholder="First Name">
+          <small id="fnamehelp" class="form-text text-muted">Unless your name is Himank</small>
+        </div>
+        <div class="form-group">
+          <label for="lname">Last Name</label>
+          <input class="form-control" name="lname_add" placeholder="Last Name">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" class="form-control" name="email_add" placeholder="Email">
+        </div>
+        <button type="submit" name="submit" class="btn btn-primary">Add</button>
+      </form>
+    </div>
+    <div class="col-md-6">
+      <div>
+        <h3>Deleting a member</h3>
+      </div>
+      <hr>
+      <form action="/modify" method="Post">
+        <input class="form-control" name="action" value="delete" type="hidden">
+        <div class="form-group">
+          <label for="fname">First Name</label>
+          <input class="form-control" name="fname_delete" placeholder="First Name">
+          <small id="fnamehelp" class="form-text text-muted">Unless your name is Himank</small>
+        </div>
+        <button type="submit" class="btn btn-primary" name="submit" value="REFRESH">Delete</button>
+      </form>
+    </div>
+  </div>
+  <hr>
+  <!--<div class = "table-responsive">-->
+  <!--<table class = "table">-->
+  <!--<thead>-->
+  <!--<tr>-->
+  <!--<th>First Name</th>-->
+  <!--<th>Last Name</th>-->
+  <!--<th>Email</th>-->
+  <!--</tr>-->
+  <!--</thead>-->
+  <!--<tbody>-->
+  <!--<tr>-->
+  <!--<td>Product4</td>-->
+  <!--<td>20/10/2013</td>-->
+  <!--<td>Declined</td>-->
+  <!--</tr>-->
+  <!--</tbody>-->
+  <!--</table>-->
+  <!--</div>  -->
+  <h3>Number of Entries: {{ count }}</h3>
+</div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 </body>
 </html>
