@@ -14,23 +14,21 @@
 <body>
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
-    <h1>TAMUhack Registration</h1>
-    <p class="lead">Total Students: {{ count }}</p>
+    <h1 class="display-3">Results
+      <h1>
+        <p class="lead">Number of Entries: {{ count }}</p>
+      </h1>
+    </h1>
   </div>
 </div>
 <div class="container">
-  <div class="col-md-4 text-center">
-    <div class="thumbnail" style="width: 500px">
-      <a href="/participants"><h2>View all participants</h2></a>
-      <h4><span class="label label-warning label-as-badge">TAMUhack Applicants</span></h4>
-    </div>
-    <div class="thumbnail" style="width: 500px">
-      <a href="/modify"><h2>Modify applicants</h2></a>
-      <h4><span class="label label-warning label-as-badge">TAMUhack Applicants</span></h4>
-    </div>
-    <div class="thumbnail" style="width: 500px">
-      <a href="/upload"><h2>Upload Data</h2></a>
-      <h4><span class="label label-warning label-as-badge">TAMUhack Applicants</span></h4>
+    <div class="row">
+        <form action = "/upload" method = "POST" enctype = "multipart/form-data">
+        <label class="btn btn-default btn-file">
+            Browse <input type="file" hidden>
+        </label>
+            <input type = "submit"/>
+        </form>
     </div>
 </div>
 
@@ -39,3 +37,4 @@
 
 </body>
 </html>
+

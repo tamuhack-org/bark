@@ -1,4 +1,4 @@
-from resources import Person
+from resources import person, parser
 from flask import Flask, render_template, request, redirect
 from flask_pymongo import PyMongo
 from pymongo import MongoClient
@@ -47,27 +47,6 @@ def modify():
         count = mongo.db.people.count({})
         return render_template('add_delete.html', count=count)
 
-
-# # testing a post method from the form called "render.html" (this is still in progress)
-# @app.route("/add", methods=['POST'])
-# def add():
-#     fname = request.form['fname_add']
-#     lname = request.form['lname_add']
-#     email = request.form['email_add']
-#     mongo.db.people.insert({"first_name": fname, "last_name": lname, "email": email})
-#     print str(mongo.db.people.find_one({}))
-#     count = mongo.db.people.count({})
-#     return render_template('add_delete.html', count=count)
-#
-#
-# @app.route('/delete', methods=['POST'])
-# def delete():
-#     b = request.form['fname_delete']
-#     mongo.db.people.delete_one({"first_name": b})
-#     count = mongo.db.people.count({})
-#     return render_template('add_delete.html', count=count)
-
-
 @app.route('/participants')
 def participants():
     count = mongo.db.people.count({})
@@ -80,6 +59,19 @@ def participants():
                                                 ]})
 
     return render_template('results.html', count=count, entries=entries, query=query)
+
+@app.route("/upload", methods=['GET', 'POST'])
+def upload():
+    if request.method == 'GET':
+        count = mongo.db.people.count({})
+        return render_template('upload.html', count=count)
+    if request.method == 'POST':
+        #when we receive a post reqeust, we need to take the text, convert them to python objects and add these as mm_document
+        #note: if there happens to be a repeat, we must consider this and simply overwrite the new information, not a add new
+        count = mongo.db.people.count({})
+        pars = parser.Parser(request.form['schema'])
+        print request.form['csv'].splitlines()
+        return render_template('upload.html', count=count)
 
 
 if __name__ == "__main__":
