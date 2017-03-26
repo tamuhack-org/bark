@@ -1,8 +1,7 @@
-#from resources import person, parser
 from flask import Flask, render_template, request, redirect
-from werkzeug import secure_filename
 from flask_mongoengine import MongoEngine, QuerySet
 from mongoengine.queryset.visitor import Q
+from resources import typeform, m_person
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads/'
@@ -10,14 +9,17 @@ app.config['MONGODB_SETTINGS'] = {
     'db': 'm_engine_db',
     'host': 'mongodb://tamuhack17:Tamuhackdb17@ds129600.mlab.com:29600/m_engine_db'
 }
-db = MongoEngine()
-db.init_app(app)
 
-#creating a simple Person Class
-class Person(db.DynamicDocument):
-    first_name = db.StringField(required = True)
-    last_name = db.StringField(required = True)
+#things that need to be added
+#   1: error handling for manual upload of an entry
+#   2: pagination on results page
+#   3: Back buttons on all pages to get back home?
+#   4: loading html div for upload pages
 
+
+m_person.db.init_app(app)
+Person = m_person.Person
+parser = typeform.Typeform_Parser(Person)
 
 @app.route('/')
 def home_page():
@@ -33,8 +35,8 @@ def modify():
         if request.form['action'] == 'add':
             fname = request.form['fname_add']
             lname = request.form['lname_add']
-            #email = request.form['email_add']
-            if fname and lname:
+            email = request.form['email_add']
+            if fname and lname and email:
                 add = Person()
                 add.first_name = fname
                 add.last_name = lname
@@ -55,26 +57,34 @@ def modify():
 def participants():
     count = Person.objects.count()
     entries = Person.objects()
-    query = request.args.get('q', '')
-    if query:
-        entries = Person.objects(Q(first_name__icontains=query)|Q(last_name__icontains=query))
-    return render_template('results.html', count=count, entries=entries, query=query)
+    #if the something is sent via the action argument (happens only with an upload)
+    action = request.args.get('action', '')
+    if action:
+        if action == 'uploaded':
+            parser.save_data()
+            # m_person.save_update(parser.get_data())
+            count = Person.objects.count()
+            entries = Person.objects()
+            return render_template('results.html', count=count, entries=entries, msg = "Successful Upload")
+        elif action == 'return':
+            return render_template('results.html', count=count, entries=entries, msg = "You didn't upload")
+    #otherwise, its a query or an empty query
+    else:
+        #second value is a default argument ''
+        query = request.args.get('q', '')
+        if query:
+            entries = Person.objects(Q(first_name__icontains=query)|Q(last_name__icontains=query)|Q(email__icontains=query))
+        return render_template('results.html', count=count, entries=entries, query=query, msg = "randomshit")
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
     if request.method == 'GET':
+        #loads data into the parser
         count = Person.objects.count()
-        return render_template('upload.html', count=count)
-    if request.method == 'POST':
-        #when we receive a post reqeust, we need to take the text, convert them to python objects and add these as mm_document
-        #note: if there happens to be a repeat, we must consider this and simply overwrite the new information, not a add new
-        #cfile = request.files['file']
-        #cfile.save(secure_filename(cfile.filename))
-        #count = Person.objects.count()
-        # pars = parser.Parser(request.form['schema'])
-        # print request.form['csv'].splitlines()
-        return render_template('upload.html', count=count)
-
+        sample = str(parser.get_preview())
+        print sample
+        count_diff = parser.get_entry_count()
+        return render_template('upload.html', count=count, sample_data=sample ,count_diff=count_diff, msg="For uploading data from a request")
 
 if __name__ == "__main__":
     app.run()

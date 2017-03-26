@@ -14,20 +14,29 @@
 <body>
 <div class="jumbotron jumbotron-fluid">
   <div class="container">
-    <h1 class="display-3">Results
+    <h1 class="display-3">Upload
       <h1>
         <p class="lead">Number of Entries: {{ count }}</p>
+          <p class="lead">Message: {{ msg }}</p>
       </h1>
     </h1>
   </div>
 </div>
 <div class="container">
     <div class="row">
-        <form action = "/upload" method = "POST" enctype = "multipart/form-data">
-        <label class="btn btn-default btn-file">
-            Browse <input type="file" hidden>
-        </label>
-            <input type = "submit"/>
+        <p>Sample Schema: {{ sample_data }}</p>
+    </div>
+    <div class="row">
+        <p>Number of new entries:{{ count_diff }}</p>
+    </div>
+    <div class="row">
+        <form action="/participants" method="GET">
+            <input class="form-control" name="action" value="uploaded" type="hidden">
+            <button type="submit" name="submit" class="btn btn-primary">Upload</button>
+        </form>
+        <form action="/participants" method="GET">
+            <input class="form-control" name="action" value="return" type="hidden">
+            <button type="submit" name="submit" class="btn btn-primary">Return</button>
         </form>
     </div>
 </div>
