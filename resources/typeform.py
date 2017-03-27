@@ -4,6 +4,7 @@ from random import randint
 
 DEFAULT_REQUEST_LIMIT = 1000
 
+
 class Typeform_Parser(object):
     def __init__(self, person_class):
         self.schema = {"28125773": "first_name", "28125775": "last_name",
@@ -15,10 +16,10 @@ class Typeform_Parser(object):
         self.request_string = "https://api.typeform.com/v1/form/HDv04s?key=598bae62949ccf0f2098d86db19592d0aa0a2260"
         self.data = []
         self.person_db = person_class
-        # initialize the attributes of the person object
 
-    def save_data(self):
-        data_list = self.parse_data()
+    def _internal_save(self, data_list):
+        #store the number os succesful uploads that happen
+        num_uploads = 0
         for person_data in data_list:
             try:
                 # if the person object exists with a given email, ignore it
@@ -30,6 +31,23 @@ class Typeform_Parser(object):
                 for x in person_data:
                     setattr(p, x, person_data[x])
                 p.save()
+                num_uploads += 1
+        return num_uploads
+
+    def save_group(self):
+        data_list = self.parse_data()
+        return self._internal_save(data_list)
+
+    def save_single(self, dict):
+        output_dict = {}
+        #build a dictionary using the schema that is defined and fill it with provided fields
+        for key, value in self.schema.iteritems():
+            if value in dict:
+                output_dict[value] = dict[value]
+            else:
+                output_dict[value] = ""
+        #pass a list of one element to the internal save method
+        return self._internal_save([output_dict])
 
     def parse_preview(self):
         # gets a python dictionary object from a get request
