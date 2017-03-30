@@ -8,6 +8,8 @@ class Person(db.DynamicDocument):
     #note: it looks like a dynamic field requires a "require" attribute
     email = db.StringField(required=True)
 
+def say_shit():
+    print "hello"
 #Note: method below has been moved to "typeform.py"
 #
 # def save_update(data_list):
