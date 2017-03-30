@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect
 from flask_mongoengine import MongoEngine, QuerySet
 from mongoengine.queryset.visitor import Q
-from resources import typeform, m_person
+from resources import typeform, mongo_interface
 
 app = Flask(__name__)
 app.config['MONGODB_SETTINGS'] = {
@@ -10,14 +10,18 @@ app.config['MONGODB_SETTINGS'] = {
 }
 
 # things that need to be added
-#   1: error handling for manual upload of an entry
+#   1: write a "delete" method that considers elements that don't exist
 #   2: pagination on results page
 #   3: Back buttons on all pages to get back home?
 #   4: loading html div for upload pages
 
-m_person.db.init_app(app)
-Person = m_person.Person
-parser = typeform.Typeform_Parser(Person)
+mongo_interface.db.init_app(app)
+#the Person class is essent
+Person = mongo_interface.Person
+#the parser takes data from the json requests
+parser = typeform.Typeform_Parser()
+#db_handler class does all of the saving and deleting in our mongo instance
+db_handler = mongo_interface.DB_Handler(Person, parser.schema)
 
 @app.route('/')
 def home_page():
@@ -31,22 +35,24 @@ def home_page():
 def modify():
     people = Person.objects()
     if request.method == 'POST':
+        # adding a new member
         if request.form['action'] == 'add':
+            num_uploads, num_repeats = 0, 0
             first_name = request.form['fname_add']
             last_name = request.form['lname_add']
             email = request.form['email_add']
-            save_dict = {"first_name": first_name, "last_name": last_name, "email": email}
+            # if all the blanks are full, reassign above variables and perform a save operation
             if first_name and last_name and email:
-                num_uploads = parser.save_single(save_dict)
-            output_str = "Successfully Uploaded " + str(num_uploads)
+                save_dict = {"first_name": first_name, "last_name": last_name, "email": email}
+                saved_data = db_handler.save_single(save_dict)
+                num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
+            # generation an output string when a post request is performed
+            output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(num_repeats) + " repeat(s)"
             return render_template('results.html', count=people.count(), entries=people, msg=output_str)
+        # deleting a member given his/her email
         elif request.form['action'] == 'delete':
             query = request.form['email_delete']
-            to_delete = people(email=query)
-            num_delete = 0
-            if to_delete:
-                to_delete.delete()
-                num_delete = 1
+            num_delete = db_handler.delete_single(query)["deleted"]
             output_str = "Successfully Deleted " + str(num_delete)
             return render_template('results.html', count=people.count(), entries=people, msg=output_str)
     elif request.method == 'GET':
@@ -60,10 +66,11 @@ def participants():
     action = request.args.get('action', '')
     if action:
         if action == 'uploaded':
-            num_uploads = parser.save_group()
+            saved_data = db_handler.save_group(parser.parse_data())
+            num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
             count = Person.objects.count()
             entries = Person.objects()
-            output_str = "Successfully Uploaded " + str(num_uploads)
+            output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(num_repeats) + " repeat(s)"
             return render_template('results.html', count=count, entries=entries, msg=output_str)
         elif action == 'return':
             return render_template('results.html', count=count, entries=entries, msg="No Upload")
@@ -80,10 +87,10 @@ def upload():
     if request.method == 'GET':
         # loads data into the parser
         count = Person.objects.count()
-        sample = str(parser.parse_preview())
-        count_diff = 4
-        #count_diff = parser.get_entry_count()
-        return render_template('upload.html', count=count, sample_data=sample ,count_diff=count_diff, msg="For uploading data from a request")
+        data = parser.parse_preview()
+        preview = data["data"]
+        new_count = data["count"]
+        return render_template('upload.html', count=count, sample_data=preview ,count_diff=new_count, msg="For uploading data from a request")
 
 if __name__ == "__main__":
     app.run()
