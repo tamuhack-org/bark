@@ -4,9 +4,8 @@ from random import randint
 
 DEFAULT_REQUEST_LIMIT = 1000
 
-
 class Typeform_Parser(object):
-    def __init__(self, person_class):
+    def __init__(self):
         self.schema = {"28125773": "first_name", "28125775": "last_name",
                       "28125781": "gender", "28127706": "travel",
                       "28127225": "additional", "28125780": "experience",
@@ -15,39 +14,6 @@ class Typeform_Parser(object):
                       "28128125":"school", "28158536": "resume"}
         self.request_string = "https://api.typeform.com/v1/form/HDv04s?key=598bae62949ccf0f2098d86db19592d0aa0a2260"
         self.data = []
-        self.person_db = person_class
-
-    def _internal_save(self, data_list):
-        #store the number os succesful uploads that happen
-        num_uploads = 0
-        for person_data in data_list:
-            try:
-                # if the person object exists with a given email, ignore it
-                self.person_db.objects.get(email=person_data["email"])
-                print person_data["email"]
-            except Exception:
-                # if we get a "does not exist", create a new person
-                p = self.person_db()
-                for x in person_data:
-                    setattr(p, x, person_data[x])
-                p.save()
-                num_uploads += 1
-        return num_uploads
-
-    def save_group(self):
-        data_list = self.parse_data()
-        return self._internal_save(data_list)
-
-    def save_single(self, dict):
-        output_dict = {}
-        #build a dictionary using the schema that is defined and fill it with provided fields
-        for key, value in self.schema.iteritems():
-            if value in dict:
-                output_dict[value] = dict[value]
-            else:
-                output_dict[value] = ""
-        #pass a list of one element to the internal save method
-        return self._internal_save([output_dict])
 
     def parse_preview(self):
         # gets a python dictionary object from a get request
@@ -64,7 +30,7 @@ class Typeform_Parser(object):
         while not output_data:
             output_data = responses[randint(0, limit)]["answers"]
             print output_data
-        return output_data
+        return {"data": output_data, "count": total_count}
 
     def parse_data(self):
         output = []
@@ -80,24 +46,26 @@ class Typeform_Parser(object):
             responses = requests.get(self.request_string +"&offset=" + str(request_range * DEFAULT_REQUEST_LIMIT)).json()["responses"]
             #if the number of entries is less than 1000
             if responses:
-                for x in responses:
+                for response in responses:
                     # the answers section is the part that we actually want
-                    entry = x["answers"]
+                    entry = response["answers"]
                     # if the entry part is full (Not full means that the application wasn't finished)
                     if entry:
                         # create a new dictionary
                         curr_dic = {}
-                        for x,y in entry.iteritems():
+                        for k,v in entry.iteritems():
                             # check to see if the value has something in it
-                            if y:
+                            if v:
                                 # get rid of all
-                                x = re.sub("[^0-9]", "", x)
+                                k = re.sub("[^0-9]", "", k)
                                 # if there exists a key in schema that is a part of our current key
-                                if x in self.schema:
-                                    curr_dic[self.schema[x]] = y
+                                if k in self.schema:
+                                    curr_dic[self.schema[k]] = v
                         output.append(curr_dic)
         return output
 
+    def get_count(self):
+        return self._get_metadata()["total"]
 
     #this method returns simple metadata for a the first page of a typeform request:
     #keywords are showing, total and completed
