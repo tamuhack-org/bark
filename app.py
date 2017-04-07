@@ -2,6 +2,12 @@ from flask import Flask, render_template, request, redirect
 from flask_mongoengine import MongoEngine, QuerySet
 from mongoengine.queryset.visitor import Q
 from resources import typeform, mongo_interface
+import sys
+
+VALUES = ["first_name","last_name","gender",
+          "travel","additional","experience",
+          "major","email","race",
+          "number","school","resume"]
 
 app = Flask(__name__)
 app.config['MONGODB_SETTINGS'] = {
@@ -16,12 +22,11 @@ app.config['MONGODB_SETTINGS'] = {
 #   4: loading html div for upload pages
 
 mongo_interface.db.init_app(app)
-#the Person class is essent
 Person = mongo_interface.Person
 #the parser takes data from the json requests
-parser = typeform.Typeform_Parser()
+parser = typeform.Typeform_Parser(VALUES)
 #db_handler class does all of the saving and deleting in our mongo instance
-db_handler = mongo_interface.DB_Handler(Person, parser.schema)
+db_handler = mongo_interface.DB_Handler(Person, VALUES)
 
 @app.route('/')
 def home_page():

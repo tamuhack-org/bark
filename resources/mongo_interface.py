@@ -50,9 +50,7 @@ class DB_Handler(object):
         to_delete = self.person_db.objects(email=email)
         num_delete = 0
         if to_delete:
-            print "yaya"
             to_delete.delete()
             num_delete = 1
-        print num_delete
         return {"deleted": num_delete}
 
