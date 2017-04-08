@@ -17,6 +17,7 @@
     <h1 class="display-3">Results
       <h1>
         <p class="lead">Number of Entries: {{ count }}</p>
+          <p class="lead">Message: {{ msg }}</p>
       </h1>
     </h1>
   </div>
@@ -29,7 +30,7 @@
                value={{ query }}>
         <span class="input-group-btn">
               <button class="btn btn-default" type="submit">Search</button>
-            </span>
+        </span>
       </div>
     </form>
   </div>
@@ -41,18 +42,14 @@
         <th>First Name</th>
         <th>Last Name</th>
         <th>Email</th>
-        <th>Delete</th>
       </tr>
       </thead>
       <tbody>
       {% for item in entries %}
         <tr>
-          <td>{{ item['first_name'] }}</td>
-          <td>{{ item['last_name'] }}</td>
-          <td>{{ item['email'] }}</td>
-          <td>
-            <button>delete</button>
-          </td>
+          <td>{{ item.first_name }}</td>
+          <td>{{ item.last_name }}</td>
+            <td>{{ item.email }}</td>
         </tr>
       {% endfor %}
       </tbody>
