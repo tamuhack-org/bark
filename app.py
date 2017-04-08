@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect
 from flask_mongoengine import MongoEngine, QuerySet
 from mongoengine.queryset.visitor import Q
 from resources import typeform, mongo_interface
-import sys
+
 
 VALUES = ["first_name","last_name","gender",
           "travel","additional","experience",

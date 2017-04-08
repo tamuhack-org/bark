@@ -8,9 +8,9 @@ class Person(db.DynamicDocument):
     email = db.StringField(required=True)
 
 class DB_Handler(object):
-    def __init__(self, person_class, schema):
+    def __init__(self, person_class, values):
         self.person_db = person_class
-        self.schema = schema
+        self.values = values
 
     def _internal_save(self, data_list):
         #store the number os succesful uploads that happen
@@ -38,7 +38,7 @@ class DB_Handler(object):
     def save_single(self, dict):
         output_dict = {}
         #build a dictionary using the schema that is defined and fill it with provided fields
-        for key, value in self.schema.iteritems():
+        for value in self.values:
             if value in dict:
                 output_dict[value] = dict[value]
             else:
