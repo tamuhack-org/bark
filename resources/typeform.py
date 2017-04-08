@@ -46,7 +46,9 @@ class Typeform_Parser(object):
                 # if there exists a key in schema that is a part of our current key
                 if k in self.schema:
                     output_data[self.schema[k]] = v
-
+        output_data = None
+        while not output_data:
+            output_data = responses[randint(0, limit)]["answers"]
         return {"data": output_data, "count": total_count}
 
     def parse_data(self):
@@ -83,9 +85,10 @@ class Typeform_Parser(object):
 
     def get_count(self):
         return self._get_metadata()["total"]
-
     #this method returns simple metadata for a the first page of a typeform request:
     #keywords are showing, total and completed
+
     def _get_metadata(self):
         r = requests.get(self.request_string)
         return r.json()["stats"]["responses"]
+

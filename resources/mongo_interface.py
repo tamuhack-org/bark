@@ -52,5 +52,7 @@ class DB_Handler(object):
         if to_delete:
             to_delete.delete()
             num_delete = 1
+            to_delete.delete()
+            num_delete = 1
         return {"deleted": num_delete}
 
