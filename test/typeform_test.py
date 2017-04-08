@@ -2,7 +2,6 @@ import unittest
 from resources import typeform
 from app import VALUES
 
-
 class TestCase(unittest.TestCase):
     def setUp(self):
         self.test_parser = typeform.Typeform_Parser(VALUES)
@@ -29,8 +28,6 @@ class TestCase(unittest.TestCase):
     #check that the response contains the correct keys which exist in the schema that was built
     def test_preview_contents(self):
         schema_entries = self.test_parser.schema.values()
-        print(schema_entries)
-        print(self.preview_response)
         for k,v in self.preview_response["data"].items():
             self.assertIn(k,schema_entries,"Extraneous data in preview, check the response string")
 

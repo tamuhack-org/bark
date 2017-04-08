@@ -46,7 +46,6 @@ class Typeform_Parser(object):
                 # if there exists a key in schema that is a part of our current key
                 if k in self.schema:
                     output_data[self.schema[k]] = v
-        output_data = None
         while not output_data:
             output_data = responses[randint(0, limit)]["answers"]
         return {"data": output_data, "count": total_count}
