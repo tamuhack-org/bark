@@ -97,5 +97,13 @@ def upload():
         new_count = data["count"]
         return render_template('upload.html', count=count, sample_data=preview ,count_diff=new_count, msg="For uploading data from a request")
 
+
+@app.route('/profile/<person_id>')
+def profile(person_id):
+    unique_person = Person.objects.get(id=person_id)
+    print(person_id)
+    print(unique_person.email)
+    return render_template('profile.html', entry=unique_person)
+
 if __name__ == "__main__":
     app.run()
