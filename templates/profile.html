@@ -1,14 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
     <meta charset="UTF-8">
-    <h1>Name: {{ entry.first_name }}</h1>
-    <h1>Experience: {{ entry.last_name }}</h1>
-    <h1>Resume: {{ entry.email }}</h1>
-
+    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+    <title>TAMUhack Registration</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
 <body>
-
+<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h2>Profile: {{ entry.first_name + " " + entry.last_name }}</h2>
+    </div>
+</div>
+<div class="container">
+    {% for attr in entry.__dict__['_fields_ordered'] %}
+        <p>{{ attr|string + ": " + entry[attr]|string }}</p>
+    {% endfor %}
+</div>
 </body>
 </html>

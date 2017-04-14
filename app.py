@@ -23,9 +23,9 @@ app.config['MONGODB_SETTINGS'] = {
 
 mongo_interface.db.init_app(app)
 Person = mongo_interface.Person
-#the parser takes data from the json requests
+# the parser takes data from the json requests
 parser = typeform.Typeform_Parser(VALUES)
-#db_handler class does all of the saving and deleting in our mongo instance
+# db_handler class does all of the saving and deleting in our mongo instance
 db_handler = mongo_interface.DB_Handler(Person, VALUES)
 
 @app.route('/')
@@ -101,8 +101,7 @@ def upload():
 @app.route('/profile/<person_id>')
 def profile(person_id):
     unique_person = Person.objects.get(id=person_id)
-    print(person_id)
-    print(unique_person.email)
+    print(unique_person.__dict__)
     return render_template('profile.html', entry=unique_person)
 
 if __name__ == "__main__":
