@@ -101,7 +101,6 @@ def upload():
 @app.route('/profile/<person_id>')
 def profile(person_id):
     unique_person = Person.objects.get(id=person_id)
-    print(unique_person.__dict__)
     return render_template('profile.html', entry=unique_person)
 
 if __name__ == "__main__":
