@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect
 from flask_mongoengine import MongoEngine, QuerySet
 from mongoengine.queryset.visitor import Q
 from resources import typeform, mongo_interface
+import os
 
 VALUES = ["first_name", "last_name", "gender",
           "travel", "additional", "experience",
@@ -104,4 +105,5 @@ def profile(person_id):
     return render_template('profile.html', entry=unique_person)
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
