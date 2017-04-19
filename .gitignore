@@ -1,7 +1,9 @@
+config.py
 .DS_Store
 .idea/
 th-secrets/
 venv/
+env/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
