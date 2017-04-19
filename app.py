@@ -3,11 +3,10 @@ from flask_mongoengine import MongoEngine, QuerySet
 from mongoengine.queryset.visitor import Q
 from resources import typeform, mongo_interface
 
-
-VALUES = ["first_name","last_name","gender",
-          "travel","additional","experience",
-          "major","email","race",
-          "number","school","resume"]
+VALUES = ["first_name", "last_name", "gender",
+          "travel", "additional", "experience",
+          "major", "email", "race",
+          "number", "school", "resume"]
 
 app = Flask(__name__)
 app.config['MONGODB_SETTINGS'] = {
