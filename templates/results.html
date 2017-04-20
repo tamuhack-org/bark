@@ -26,8 +26,7 @@
   <div class="row">
     <form action="/participants" method="get" accept-charset="utf-8">
       <div class="input-group">
-        <input name="q" type="text" placeholder="Search for first name, last name, and email" class="form-control"
-               value={{ query }}>
+        <input name="q" type="text" placeholder="Search for first name, last name, and email" class="form-control" value={{ query }}>
         <span class="input-group-btn">
               <button class="btn btn-default" type="submit">Search</button>
         </span>
@@ -47,7 +46,7 @@
       <tbody>
       {% for item in entries %}
         <tr>
-          <td>{{ item.first_name }}</td>
+          <td><a href={{'/profile/' + item.id|string }}>{{ item.first_name }}</a></td>
           <td>{{ item.last_name }}</td>
             <td>{{ item.email }}</td>
         </tr>
