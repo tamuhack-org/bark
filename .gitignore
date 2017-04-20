@@ -3,6 +3,7 @@ config.py
 .idea/
 th-secrets/
 venv/
+env/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
