@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from flask_mongoengine import MongoEngine, QuerySet
 from mongoengine.queryset.visitor import Q
 from resources import typeform, mongo_interface
@@ -28,6 +28,7 @@ parser = typeform.Typeform_Parser(VALUES)
 # db_handler class does all of the saving and deleting in our mongo instance
 db_handler = mongo_interface.DB_Handler(Person, VALUES)
 
+
 @app.route('/')
 def home_page():
     # we can get info from a mongo document
@@ -52,7 +53,8 @@ def modify():
                 saved_data = db_handler.save_single(save_dict)
                 num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
             # generation an output string when a post request is performed
-            output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(num_repeats) + " repeat(s)"
+            output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(
+                num_repeats) + " repeat(s)"
             return render_template('results.html', count=people.count(), entries=people, msg=output_str)
         # deleting a member given his/her email
         elif request.form['action'] == 'delete':
@@ -63,29 +65,65 @@ def modify():
     elif request.method == 'GET':
         return render_template('add_delete.html', count=people.count())
 
+
 @app.route('/participants')
 def participants():
-    count = Person.objects.count()
-    entries = Person.objects()
+    """
+    Endpoint to display list of participants
+    :return: 
+    """
+    # TODO(jay): Move the action to a separate endpoint
     # if the something is sent via the action argument (happens only with an upload)
     action = request.args.get('action', '')
+
+    # reload the page for blank page number i.e. page=''
+    try:
+        page = int(request.args.get('page', 1))
+    except ValueError:
+        return redirect(url_for('participants'))
+
+    count = Person.objects.count()
+    entries = get_paginated_entries(Person.objects(), page=page)
     if action:
         if action == 'uploaded':
             saved_data = db_handler.save_group(parser.parse_data())
             num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
             count = Person.objects.count()
-            entries = Person.objects()
-            output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(num_repeats) + " repeat(s)"
+            output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(
+                num_repeats) + " repeat(s)"
             return render_template('results.html', count=count, entries=entries, msg=output_str)
         elif action == 'return':
             return render_template('results.html', count=count, entries=entries, msg="No Upload")
+
     # otherwise, its a query or an empty query
     else:
-        # second value is a default argument ''
-        query = request.args.get('q', '')
+        query = request.args.get('q')
+
+        # reload the page for blank query
+        if query == '':
+            return redirect(url_for('participants'))
+
         if query:
-            entries = Person.objects(Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query))
-        return render_template('results.html', count=count, entries=entries, query=query, msg="Displaying Search Results")
+            entries = get_paginated_entries(Person.objects(
+                Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query)), page)
+        context = dict(
+            count=count,
+            entries=entries,
+            query=query,
+            msg="Displaying Search Results"
+        )
+        return render_template('results.html', **context)
+
+
+def get_paginated_entries(entries, page):
+    """
+    Returns paginated entries. Used for participants endpoint.
+    :param entries: list of entries
+    :param page: current page number
+    :return: paginated entries
+    """
+    return entries.paginate(page=page, per_page=10)
+
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
@@ -95,13 +133,15 @@ def upload():
         data = parser.parse_preview()
         preview = data["data"]
         new_count = data["count"]
-        return render_template('upload.html', count=count, sample_data=preview ,count_diff=new_count, msg="For uploading data from a request")
+        return render_template('upload.html', count=count, sample_data=preview, count_diff=new_count,
+                               msg="For uploading data from a request")
 
 
 @app.route('/profile/<person_id>')
 def profile(person_id):
     unique_person = Person.objects.get(id=person_id)
     return render_template('profile.html', entry=unique_person)
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
