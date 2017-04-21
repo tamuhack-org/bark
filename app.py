@@ -88,12 +88,9 @@ def status_update():
     if request.method == 'POST':
         action = request.form['action']
         email = request.form['email']
-        if email:
-            if action is "accepted" or "rejected":
-                print(Person.objects(email=email).update_one(set__status=action))
+        if email and action:
+                Person.objects(email=email).update_one(set__status=action)
     return redirect(url_for('participants'))
-
-
 
 @app.route('/participants')
 def participants():
