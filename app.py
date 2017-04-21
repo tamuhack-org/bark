@@ -66,16 +66,28 @@ def modify():
         return render_template('add_delete.html', count=people.count())
 
 
+@app.route('/upload')
+def upload():
+    count = Person.objects.count()
+    entries = get_paginated_entries(Person.objects(), page=1)
+    action = request.args.get('action', '')
+    if action == 'uploaded':
+        saved_data = db_handler.save_group(parser.parse_data())
+        num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
+        count = Person.objects.count()
+        output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(
+            num_repeats) + " repeat(s)"
+        return render_template('results.html', count=count, entries=entries, msg=output_str)
+    elif action == 'return':
+        return render_template('results.html', count=count, entries=entries, msg="No Upload")
+
 @app.route('/participants')
 def participants():
     """
     Endpoint to display list of participants
     :return: 
     """
-    # TODO(jay): Move the action to a separate endpoint
     # if the something is sent via the action argument (happens only with an upload)
-    action = request.args.get('action', '')
-
     # reload the page for blank page number i.e. page=''
     try:
         page = int(request.args.get('page', 1))
@@ -84,35 +96,22 @@ def participants():
 
     count = Person.objects.count()
     entries = get_paginated_entries(Person.objects(), page=page)
-    if action:
-        if action == 'uploaded':
-            saved_data = db_handler.save_group(parser.parse_data())
-            num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
-            count = Person.objects.count()
-            output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(
-                num_repeats) + " repeat(s)"
-            return render_template('results.html', count=count, entries=entries, msg=output_str)
-        elif action == 'return':
-            return render_template('results.html', count=count, entries=entries, msg="No Upload")
+    query = request.args.get('q')
 
-    # otherwise, its a query or an empty query
-    else:
-        query = request.args.get('q')
+    # reload the page for blank query
+    if query == '':
+        return redirect(url_for('participants'))
 
-        # reload the page for blank query
-        if query == '':
-            return redirect(url_for('participants'))
-
-        if query:
-            entries = get_paginated_entries(Person.objects(
-                Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query)), page)
-        context = dict(
-            count=count,
-            entries=entries,
-            query=query,
-            msg="Displaying Search Results"
-        )
-        return render_template('results.html', **context)
+    if query:
+        entries = get_paginated_entries(Person.objects(
+            Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query)), page)
+    context = dict(
+        count=count,
+        entries=entries,
+        query=query,
+        msg="Displaying Search Results"
+    )
+    return render_template('results.html', **context)
 
 
 def get_paginated_entries(entries, page):
@@ -125,15 +124,15 @@ def get_paginated_entries(entries, page):
     return entries.paginate(page=page, per_page=10)
 
 
-@app.route("/upload", methods=['GET', 'POST'])
-def upload():
+@app.route("/confirm", methods=['GET', 'POST'])
+def confirm():
     if request.method == 'GET':
         # loads data into the parser
         count = Person.objects.count()
         data = parser.parse_preview()
         preview = data["data"]
         new_count = data["count"]
-        return render_template('upload.html', count=count, sample_data=preview, count_diff=new_count,
+        return render_template('confirm.html', count=count, sample_data=preview, count_diff=new_count,
                                msg="For uploading data from a request")
 
 
