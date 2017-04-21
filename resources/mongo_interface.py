@@ -7,11 +7,13 @@ db = flask_mongoengine.MongoEngine()
 class Person(db.DynamicDocument):
     # note: it looks like a dynamic field requires a "require" attribute
     email = db.StringField(required=True)
+    status = db.StringField(default="not-reviewed")
 
 
 class Test_Person(db.DynamicDocument):
     # note: it looks like a dynamic field requires a "require" attribute
     email = db.StringField(required=True)
+    status = db.StringField(default="not-reviewed")
 
 
 class DB_Handler(object):

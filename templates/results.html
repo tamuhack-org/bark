@@ -43,6 +43,7 @@
                 <th>First Name</th>
                 <th>Last Name</th>
                 <th>Email</th>
+                <th>Status</th>
             </tr>
             </thead>
             <tbody>
@@ -51,6 +52,7 @@
                     <td><a href={{ '/profile/' + item.id|string }}>{{ item.first_name }}</a></td>
                     <td>{{ item.last_name }}</td>
                     <td>{{ item.email }}</td>
+                    <td>{{ item.status }}</td>
                 </tr>
             {% endfor %}
             </tbody>
