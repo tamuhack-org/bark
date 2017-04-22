@@ -5,20 +5,22 @@ from random import randint
 DEFAULT_REQUEST_LIMIT = 1000
 
 class Typeform_Parser(object):
-    def __init__(self, values):
+    def __init__(self, config_dict):
         # assign this based on out specific typeform configuration
-        self.schema = {}
-        self.typeform_config = {"28125773": "first_name", "28125775": "last_name",
-                      "28125781": "gender", "28127706": "travel",
-                      "28127225": "additional", "28125780": "experience",
-                      "28127904": "major", "28125779": "email",
-                      "28141455": "race", "28125778": "number",
-                      "28128125":"school", "28158536": "resume"}
-        # here, we build a schema based on values that want to be used in "app.py" and the specific configuration
-        for value in values:
-            for k, v in self.typeform_config.items():
-                if value is v:
-                    self.schema[k] = v
+        # self.schema = {}
+        # self.typeform_config = {"28125773": "first_name", "28125775": "last_name",
+        #               "28125781": "gender", "28127706": "travel",
+        #               "28127225": "additional", "28125780": "experience",
+        #               "28127904": "major", "28125779": "email",
+        #               "28141455": "race", "28125778": "number",
+        #               "28128125":"school", "28158536": "resume"}
+        # # here, we build a schema based on values that want to be used in "app.py" and the specific configuration
+        # for value in values:
+        #     for k, v in self.typeform_config.items():
+        #         if value is v:
+        #             self.schema[k] = v
+        # print(self.schema)
+        self.schema = config_dict
 
         self.request_string = "https://api.typeform.com/v1/form/HDv04s?key=598bae62949ccf0f2098d86db19592d0aa0a2260"
         self.data = []
@@ -28,16 +30,17 @@ class Typeform_Parser(object):
         data = requests.get(self.request_string).json()
         responses = data["responses"]
         total_count = data["stats"]["responses"]["total"]
-        #return nothing if the count is 0
+        # return nothing if the count is 0
         if not total_count:
             return None
         # defines a limit for generating a random number
         limit = min(total_count, DEFAULT_REQUEST_LIMIT)
-        #define an output, and continue to query random indexes until the output has a "non-empty" entry
+        # define an output, and continue to query random indexes until the output has a "non-empty" entry
         request_data = {}
         output_data = {}
         while not request_data:
             request_data = responses[randint(0, limit)]["answers"]
+        # parses the "request_data" into a dictionary
         for k,v in request_data.items():
             # check to see if the value has something in it
             if v:

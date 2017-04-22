@@ -42,22 +42,9 @@
             </tbody>
         </table>
     </div>
-    <form action="/status-update" method="Post">
-        <input class="form-control" name="action" value="accepted" type="hidden">
-        <input class="form-control" name="email" value={{entry.email|string}} type="hidden">
-        <button type="submit" name="submit" class="btn btn-primary">Accept Applicant</button>
-    </form>
-    <br>
-    <form action="/status-update" method="Post">
-        <input class="form-control" name="action" value="rejected" type="hidden">
-        <input class="form-control" name="email" value={{entry.email|string}} type="hidden">
-        <button type="submit" name="submit" class="btn btn-primary">Reject Applicant</button>
-    </form>
-    <br>
-    <form action="/status-update" method="Post">
-        <input class="form-control" name="action" value="not-reviewed" type="hidden">
-        <input class="form-control" name="email" value={{entry.email|string}} type="hidden">
-        <button type="submit" name="submit" class="btn btn-primary">Mark as "un-reviewed"</button>
+    <form action={{ '/profile/' + entry.id|string }} method="GET">
+        <input class="form-control" name="action" value="edit" type="hidden">
+        <button type="submit" name="submit" class="btn btn-primary">Edit Status</button>
     </form>
 </div>
 </body>

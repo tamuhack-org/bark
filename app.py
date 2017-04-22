@@ -4,10 +4,12 @@ from mongoengine.queryset.visitor import Q
 from resources import typeform, mongo_interface
 import os
 
-VALUES = ["first_name", "last_name", "gender",
-          "travel", "additional", "experience",
-          "major", "email", "race",
-          "number", "school", "resume"]
+CONFIG_VALUES = {"28125773": "first_name", "28125775": "last_name",
+                        "28125781": "gender", "28127706": "travel",
+                        "28127225": "additional", "28125780": "experience",
+                        "28127904": "major", "28125779": "email",
+                        "28141455": "race", "28125778": "number",
+                        "28128125": "school", "28158536": "resume"}
 
 app = Flask(__name__)
 app.config['MONGODB_SETTINGS'] = {
@@ -24,9 +26,9 @@ app.config['MONGODB_SETTINGS'] = {
 mongo_interface.db.init_app(app)
 Person = mongo_interface.Person
 # the parser takes data from the json requests
-parser = typeform.Typeform_Parser(VALUES)
+parser = typeform.Typeform_Parser(CONFIG_VALUES)
 # db_handler class does all of the saving and deleting in our mongo instance
-db_handler = mongo_interface.DB_Handler(Person, VALUES)
+db_handler = mongo_interface.DB_Handler(Person, CONFIG_VALUES)
 
 
 @app.route('/')
@@ -42,6 +44,7 @@ def modify():
     people = Person.objects()
     if request.method == 'POST':
         # adding a new member
+        entries = get_paginated_entries(people, page=1)
         if request.form['action'] == 'add':
             num_uploads, num_repeats = 0, 0
             first_name = request.form['fname_add']
@@ -55,13 +58,13 @@ def modify():
             # generation an output string when a post request is performed
             output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(
                 num_repeats) + " repeat(s)"
-            return render_template('results.html', count=people.count(), entries=people, msg=output_str)
+            return render_template('results.html', count=people.count(), entries=entries, msg=output_str)
         # deleting a member given his/her email
         elif request.form['action'] == 'delete':
             query = request.form['email_delete']
             num_delete = db_handler.delete_single(query)["deleted"]
             output_str = "Successfully Deleted " + str(num_delete)
-            return render_template('results.html', count=people.count(), entries=people, msg=output_str)
+            return render_template('results.html', count=people.count(), entries=entries, msg=output_str)
     elif request.method == 'GET':
         return render_template('add_delete.html', count=people.count())
 
@@ -82,15 +85,19 @@ def upload():
         return render_template('results.html', count=count, entries=entries, msg="No Upload")
 
 
-#route for accepting/rejecting an applicant
+# TODO @himank should this be put onto a person's route?
+# route for accepting/rejecting an applicant
+# if the person already has a status (rejected or accepted), we return 'reviewed-profile.html' (just an edit button)
+# otherwise, return 'profile.html'
 @app.route("/status-update", methods=['GET', 'POST'])
 def status_update():
     if request.method == 'POST':
         action = request.form['action']
         email = request.form['email']
-        if email and action:
-                Person.objects(email=email).update_one(set__status=action)
+        if email:
+            Person.objects(email=email).update_one(set__status=action)
     return redirect(url_for('participants'))
+
 
 @app.route('/participants')
 def participants():
@@ -115,7 +122,8 @@ def participants():
 
     if query:
         entries = get_paginated_entries(Person.objects(
-            Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query)), page)
+            Q(first_name__icontains=query) | Q(last_name__icontains=query)
+            | Q(email__icontains=query) | Q(status__exact=query)), page)
     context = dict(
         count=count,
         entries=entries,
@@ -147,10 +155,25 @@ def confirm():
                                msg="For uploading data from a request")
 
 
+# if the person hasn't been reviewed or the get request has a special "edit" tag, we let them edit
 @app.route('/profile/<person_id>')
 def profile(person_id):
+    action = request.args.get('action', '')
+    # if a next tag is attached to the request, find a document that hasn't been reviewed yet
     unique_person = Person.objects.get(id=person_id)
-    return render_template('profile.html', entry=unique_person)
+    if action == 'next':
+        other_entries = Person.objects(status="not-reviewed", id__ne=person_id)
+        # if a person that hasn't been reviewed exists, overwrite "unique person"
+        if other_entries:
+            unique_person = other_entries[0]
+        else:
+            return render_template('results.html', count=Person.objects.count(),
+                                   entries=Person.objects(), msg="All applicants have been reviewed")
+    #if there's an edit tag, who all options
+    elif action == "edit":
+        return render_template('profile.html', entry=unique_person)
+    # otherwise, render a template that requires to click 'edit'
+    return render_template('reviewed-profile.html', entry=unique_person)
 
 
 if __name__ == "__main__":

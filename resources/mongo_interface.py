@@ -17,9 +17,9 @@ class Test_Person(db.DynamicDocument):
 
 
 class DB_Handler(object):
-    def __init__(self, person_class, values):
+    def __init__(self, person_class, dict_values):
         self.person_db = person_class
-        self.values = values
+        self.values = dict_values
 
     def _internal_save(self, data_list):
         # store the number os succesful uploads that happen
@@ -42,14 +42,16 @@ class DB_Handler(object):
         return self._internal_save(data_list)
 
     def save_single(self, dict):
+        print(dict)
         output_dict = {}
         # build a dictionary using the schema that is defined and fill it with provided fields
-        for value in self.values:
+        for key, value in self.values.items():
             if value in dict:
                 output_dict[value] = dict[value]
             else:
                 output_dict[value] = ""
         # pass a list of one element to the internal save method
+        print (output_dict)
         return self._internal_save([output_dict])
 
     def delete_single(self, email):
@@ -63,3 +65,8 @@ class DB_Handler(object):
     def delete_all(self):
         for person in self.person_db.objects():
             person.delete()
+
+    def update_all_status(self, status):
+        self.person_db.objects().update(set__status=status)
+
+
