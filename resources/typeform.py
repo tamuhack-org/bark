@@ -5,22 +5,17 @@ from random import randint
 DEFAULT_REQUEST_LIMIT = 1000
 
 class Typeform_Parser(object):
-    def __init__(self, values):
+    def __init__(self, values, typeform_mapping, request_str):
         # assign this based on out specific typeform configuration
         self.schema = {}
-        self.typeform_config = {"28125773": "first_name", "28125775": "last_name",
-                      "28125781": "gender", "28127706": "travel",
-                      "28127225": "additional", "28125780": "experience",
-                      "28127904": "major", "28125779": "email",
-                      "28141455": "race", "28125778": "number",
-                      "28128125":"school", "28158536": "resume"}
+        self.typeform_config = typeform_mapping
         # here, we build a schema based on values that want to be used in "app.py" and the specific configuration
         for value in values:
             for k, v in self.typeform_config.items():
                 if value is v:
                     self.schema[k] = v
 
-        self.request_string = "https://api.typeform.com/v1/form/HDv04s?key=598bae62949ccf0f2098d86db19592d0aa0a2260"
+        self.request_string = request_str
         self.data = []
 
     def parse_preview(self):

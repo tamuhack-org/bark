@@ -4,29 +4,31 @@ from mongoengine.queryset.visitor import Q
 from resources import typeform, mongo_interface
 import os
 
-VALUES = ["first_name", "last_name", "gender",
-          "travel", "additional", "experience",
-          "major", "email", "race",
-          "number", "school", "resume"]
+
+TYPEFORM_MAPPING = {"63162760" : "first_name", "63162761": "last_name",
+                    "63162763": "gender", "63162770": "email",
+                    "63162762": "phone", "63162771": "school",
+                    "63162765": "major", "63162764": "year",
+                    "63162772": "resume", "63162766": "transport",
+                    "63162767": "experience", "63162768": "shirt_size",
+                    "63162769": "race", "63162773": "personal-links",
+                    }
+
+REQUEST_STRING = "https://api.typeform.com/v1/form/PfNHtQ?key=598bae62949ccf0f2098d86db19592d0aa0a2260"
 
 app = Flask(__name__)
-app.config['MONGODB_SETTINGS'] = {
-    'db': 'm_engine_db',
-    'host': 'mongodb://tamuhack17:Tamuhackdb17@ds129600.mlab.com:29600/m_engine_db'
-}
 
-# things that need to be added
-#   1: write a "delete" method that considers elements that don't exist
-#   2: pagination on results page
-#   3: Back buttons on all pages to get back home?
-#   4: loading html div for upload pages
+app.config['MONGODB_SETTINGS'] = {
+    'db': 'tamuhack_app',
+    'host': 'mongodb://tamuhack17:Tamuhackdb17@ds031407.mlab.com:31407/tamuhack_app'
+}
 
 mongo_interface.db.init_app(app)
 Person = mongo_interface.Person
 # the parser takes data from the json requests
-parser = typeform.Typeform_Parser(VALUES)
+parser = typeform.Typeform_Parser(TYPEFORM_MAPPING.values(), TYPEFORM_MAPPING, REQUEST_STRING)
 # db_handler class does all of the saving and deleting in our mongo instance
-db_handler = mongo_interface.DB_Handler(Person, VALUES)
+db_handler = mongo_interface.DB_Handler(Person, TYPEFORM_MAPPING.values())
 
 
 @app.route('/')
@@ -98,11 +100,9 @@ def participants():
     # otherwise, its a query or an empty query
     else:
         query = request.args.get('q')
-
         # reload the page for blank query
         if query == '':
             return redirect(url_for('participants'))
-
         if query:
             entries = get_paginated_entries(Person.objects(
                 Q(first_name__icontains=query) | Q(last_name__icontains=query) | Q(email__icontains=query)), page)
