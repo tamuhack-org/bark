@@ -9,7 +9,7 @@ class PyMongoHandler(object):
         entries = self.entries(query_phrase)
         skips, num_pages = page_size * (page_num - 1), int(math.ceil(float(entries.count())/page_size))
         cursor = entries.skip(skips).limit(page_size)
-        return {"page":page_num, "num_pages": num_pages,"entries":[x for x in cursor]}
+        return {"page_num":page_num, "num_pages": num_pages,"entries":[x for x in cursor]}
 
     def count(self):
         return self.mongo_db.db.applicants.count()
@@ -45,7 +45,7 @@ class PyMongoHandler(object):
         return self._internal_save([dict_to_save])
 
     def delete_single(self, input_dict):
-        return self.generate_document(input_dict)
+        return self._internal_delete(input_dict, is_single=True)
 
     def generate_document(self, input_dict):
         save_dict = {}
@@ -67,8 +67,6 @@ class PyMongoHandler(object):
         # # pass a list of one element to the internal save method
         # return self._internal_save([output_dict])
 
-    def delete_single(self, email):
-        pass
         # to_delete = self.person_db.objects(email=email)
         # num_delete = 0
         # if to_delete:
