@@ -1,3 +1,4 @@
+# from pymongo import UpdateOne
 from flask import Flask, render_template, request, redirect, url_for
 from flask_mongoengine import MongoEngine, QuerySet
 from mongoengine.queryset.visitor import Q
@@ -57,7 +58,8 @@ def modify():
             if first_name and last_name and email:
                 save_dict = {"first_name": first_name, "last_name": last_name, "email": email}
                 saved_data = database.save_single(save_dict)
-                num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
+                # num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
+                num_uploads, num_repeats = 0,0
             output_str = "Successfully Uploaded " + str(num_uploads) + " document(s) with " + str(num_repeats) + " repeat(s)"
         elif request.form['action'] == 'delete':
             query = request.form['email_delete']
