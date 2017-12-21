@@ -18,15 +18,14 @@ class PyMongoHandler(object):
         return self.mongo_db.db.applicants.find(filter_dict)
 
     def _internal_save(self, data_list):
-        num_uploads, num_repeats = 0, 0
+        bulk = self.mongo_db.db.applicants.initialize_unordered_bulk_op()
         for person_data in data_list:
-            print person_data
-            if self.mongo_db.db.applicants.count({"email": person_data["email"]}):
-                num_repeats += 1
-            else:
-                self.mongo_db.db.applicants.insert_one(person_data)
-                num_uploads += 1
-        return {"uploads": num_uploads, "repeats": num_repeats}
+            bulk.find({"email": person_data["email"]}).upsert().update({'$set': person_data})
+        try:
+            result = bulk.execute()
+            return {"uploads": result["nInserted"], "repeats": result["nUpserted"]}
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
 
     def _internal_delete(self, query={}, is_single=True):
         if is_single:
