@@ -8,81 +8,59 @@ class Typeform_Parser(object):
     def __init__(self, values, typeform_mapping, request_str):
         # assign this based on out specific typeform configuration
         self.schema = {}
+        #mapping between field_id(in input) and id
+        self.fd_to_id = {}
         self.typeform_config = typeform_mapping
         # here, we build a schema based on values that want to be used in "app.py" and the specific configuration
         for value in values:
             for k, v in self.typeform_config.items():
                 if value is v:
                     self.schema[k] = v
-
         self.request_string = request_str
         self.data = []
 
+    #initialize field id table
+    def _init_fd(self, data):
+        if not self.fd_to_id:
+            for elem in data["questions"]:
+                self.fd_to_id[str(elem["field_id"])] = elem["id"]
+        
     def parse_preview(self):
-        # gets a python dictionary object from a get request
         data = requests.get(self.request_string).json()
+        self._init_fd(data)
         responses = data["responses"]
-        total_count = data["stats"]["responses"]["total"]
-        #return nothing if the count is 0
-        if not total_count:
-            return None
-        # defines a limit for generating a random number
-        limit = min(total_count, DEFAULT_REQUEST_LIMIT)
-        #define an output, and continue to query random indexes until the output has a "non-empty" entry
+        limit, count = data["stats"]["responses"]["showing"], data["stats"]["responses"]["total"]
+        if not limit: return None
         request_data = {}
-        output_data = {}
         while not request_data:
             request_data = responses[randint(0, limit)]["answers"]
-        for k,v in request_data.items():
-            # check to see if the value has something in it
-            if v:
-                # get rid of all extraneous numerals
-                k = re.sub("[^0-9]", "", k)
-                # if there exists a key in schema that is a part of our current key
-                if k in self.schema:
-                    output_data[self.schema[k]] = v
-        while not output_data:
-            output_data = responses[randint(0, limit)]["answers"]
-        return {"data": output_data, "count": total_count}
+        return {"data": self._convert_to_schema(request_data, data), "count": count}
 
     def parse_data(self):
         output = []
-        num_entries = self._get_metadata()["total"]
-        if not num_entries:
-            return None
-        #define a limit
+        data = requests.get(self.request_string).json()
+        num_entries = data["stats"]["responses"]["total"]
+        if not num_entries: return None
         limit = min(num_entries, DEFAULT_REQUEST_LIMIT)
-        #number of iterations or paginated requests
-        iter = num_entries // limit + 1
-        for request_range in range(0, iter):
+        iter_num = (num_entries // limit) + 1
+        for request_range in range(0, iter_num):
             # mult request range by 1000 and make it an offset in the typeform request for each iteration
+            print request_range * DEFAULT_REQUEST_LIMIT
             responses = requests.get(self.request_string +"&offset=" + str(request_range * DEFAULT_REQUEST_LIMIT)).json()["responses"]
-            #if the number of entries is less than 1000
-            if responses:
-                for response in responses:
-                    # the answers section is the part that we actually want
-                    entry = response["answers"]
-                    # if the entry part is full (Not full means that the application wasn't finished)
-                    if entry:
-                        # create a new dictionary
-                        curr_dic = {}
-                        for k,v in entry.items():
-                            # check to see if the value has something in it
-                            if v:
-                                # get rid of all
-                                k = re.sub("[^0-9]", "", k)
-                                # if there exists a key in schema that is a part of our current key
-                                if k in self.schema:
-                                    curr_dic[self.schema[k]] = v
-                        output.append(curr_dic)
+            for response in responses:
+                entry = response["answers"]
+                if entry: output.append(self._convert_to_schema(entry, data))
         return output
+
+    def _convert_to_schema(self, answer_dict, request_body):
+        output_dict = {}
+        self._init_fd(request_body)
+        for key, value in self.typeform_config.iteritems():
+            if key != "custom" and self.fd_to_id[key] in answer_dict:
+                output_dict[self.typeform_config[key]] = answer_dict[self.fd_to_id[key]]
+            elif key == "custom":
+                output_dict[self.typeform_config[key]] = ""
+        return output_dict
 
     def get_count(self):
         return self._get_metadata()["total"]
-    #this method returns simple metadata for a the first page of a typeform request:
-    #keywords are showing, total and completed
-
-    def _get_metadata(self):
-        r = requests.get(self.request_string)
-        return r.json()["stats"]["responses"]
-

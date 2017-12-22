@@ -1,4 +1,7 @@
 import math
+import sys
+from pymongo.errors import BulkWriteError
+
 
 class PyMongoHandler(object):
     def __init__(self, mongo_db, typeform_mapping):
@@ -23,28 +26,24 @@ class PyMongoHandler(object):
             bulk.find({"email": person_data["email"]}).upsert().update({'$set': person_data})
         try:
             result = bulk.execute()
-            return {"uploads": result["nInserted"], "repeats": result["nUpserted"]}
-        except:
-            print "Unexpected error:", sys.exc_info()[0]
+            return {"uploads": result["nInserted"] + result["nUpserted"], "repeats": result["nModified"]}
+        except BulkWriteError as bwe:
+            print "Unexpected error:", bwe.details
 
-    def _internal_delete(self, query={}, is_single=True):
+    def _internal_delete(self, query, is_single=True):
         if is_single:
-            num_delete = self.mongo_db.db.applicants.delete_one(query)
+            delete_result = self.mongo_db.db.applicants.delete_one(query)
         else:
-            num_delete = self.mongo_db.db.applicants.delete_many(query)
-        return {"deleted": num_delete}
+            delete_result = self.mongo_db.db.applicants.delete_many(query)
+        return {"deleted": delete_result.deleted_count}
 
-    def save_group(self, data_list):
-        list_update = [self.generate_document(i) for i in data_list]
-        return self._internal_save(list_update)
+    def save(self, data_list):
+        list_formatted = [self.generate_document(i) for i in data_list]
+        print list_formatted
+        return self._internal_save(list_formatted)
 
-    def save_single(self, input_dict):
-        dict_to_save = self.generate_document(input_dict)
-        print dict_to_save
-        return self._internal_save([dict_to_save])
-
-    def delete_single(self, input_dict):
-        return self._internal_delete(input_dict, is_single=True)
+    def delete(self, input_dict, single=True):
+        return self._internal_delete(input_dict, is_single=single)
 
     def generate_document(self, input_dict):
         save_dict = {}
@@ -53,6 +52,7 @@ class PyMongoHandler(object):
         for key, value in input_dict.iteritems():
             if key in save_dict: save_dict[key] = value
         return save_dict
+
 
 
 

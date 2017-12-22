@@ -30,13 +30,11 @@
         <p>Number of new entries:{{ count_diff }}</p>
     </div>
     <div class="row">
-        <form action="/participants" method="GET">
-            <input class="form-control" name="action" value="uploaded" hidden>
-            <button type="submit" name="submit" class="btn btn-primary">Upload</button>
+        <form action="/upload" method="GET">
+            <button type="submit" name="action" value="upload_data" class="btn btn-primary">Upload</button>
         </form>
-        <form action="/participants" method="GET">
-            <input class="form-control" name="action" value="return" hidden>
-            <button type="submit" name="submit" class="btn btn-primary">Return</button>
+        <form action="/upload" method="GET">
+            <button type="submit" name="action" value="return" class="btn btn-primary">Return</button>
         </form>
     </div>
 </div>
