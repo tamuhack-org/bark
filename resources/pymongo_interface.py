@@ -1,6 +1,7 @@
 import math
 import sys
 from pymongo.errors import BulkWriteError
+from bson.objectid import ObjectId
 
 
 class PyMongoHandler(object):
@@ -52,6 +53,10 @@ class PyMongoHandler(object):
         for key, value in input_dict.iteritems():
             if key in save_dict: save_dict[key] = value
         return save_dict
+
+    def get_entry(self, person_id):
+        return self.mongo_db.db.applicants.find_one({"_id":ObjectId(person_id)})
+
 
 
 

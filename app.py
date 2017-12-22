@@ -107,10 +107,11 @@ def upload():
             return render_template('upload.html', count=count, sample_data=preview, count_diff=new_count,
                             msg="For uploading data from a request")
 
-# @app.route('/profile/<person_id>')
-# def profile(person_id):
-#     unique_person = Person.objects.get(id=person_id)
-#     return render_template('profile.html', entry=unique_person)
+@app.route('/profile/<person_id>')
+def profile(person_id):
+    unique_person = database.get_entry(person_id) 
+    print (unique_person)
+    return render_template('profile.html', entry=unique_person)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

@@ -15,12 +15,12 @@
 <body>
 <div class="jumbotron jumbotron-fluid">
     <div class="container">
-        <h2>Profile: {{ entry.first_name + " " + entry.last_name }}</h2>
+        <h2>Profile: {{ entry["first_name"] + " " + entry["last_name"] }}</h2>
     </div>
 </div>
 <div class="container">
-    {% for attr in entry.__dict__['_fields_ordered'] %}
-        <p>{{ attr|string + ": " + entry[attr]|string }}</p>
+    {% for key in entry.keys()|sort() %}
+        <p>{{ key|string + ": " + entry[key]|string }}</p>
     {% endfor %}
 </div>
 </body>

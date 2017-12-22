@@ -48,14 +48,14 @@
             <tbody>
             {% for item in entries %}
                 <tr>
-                    <td><a href={{ '/profile/' + item.id|string }}>{{ item["first_name"]}}</a></td>
+                    <td><a href={{ '/profile/' + item["_id"]|string }}>{{ item["first_name"]}}</a></td>
                     <td>{{ item["last_name"] }}</td>
                     <td>{{ item["email"] }}</td>
                     <td>
-                        {%if someTest%}
-                            <p>Something is True</p>
-                        {%else%}
-                            <p>Something is False</p>
+                        {% if item["status"] %}
+                            {{item["status"]}}
+                        {% else %}
+                           Not Reviewed 
                         {% endif %}
                     </td>
                 </tr>
@@ -64,7 +64,6 @@
         </table>
     </div>
 
-    {# Macro for creating pagination bottom bar #}
     {% macro render_navigation(entries, endpoint) %}
         <div>
             <ul class="pagination">
