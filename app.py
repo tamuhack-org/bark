@@ -27,11 +27,11 @@ REQUEST_STRING = "https://api.typeform.com/v1/form/PfNHtQ?key=598bae62949ccf0f20
 app = Flask(__name__)
 
 # testing locally
-app.config['MONGO_DBNAME'] = 'bellbird'
+# app.config['MONGO_DBNAME'] = 'bellbird'
 
 # for current participants
-# app.config['MONGO_URI'] = "mongodb://tamuhack17:Tamuhackdb17@ds113826.mlab.com:13826/tamuhack_app"
-# app.config['MONGO_DBNAME'] = "tamuhack_app"
+app.config['MONGO_URI'] = "mongodb://tamuhack17:Tamuhackdb17@ds113826.mlab.com:13826/tamuhack_app"
+app.config['MONGO_DBNAME'] = "tamuhack_app"
 
 # last year's dataset
 # app.config['MONGO_URI'] = "mongodb://tamuhack17:Tamuhackdb17@ds129600.mlab.com:29600/m_engine_db"
@@ -131,7 +131,6 @@ def upload():
             new_count = data["count"]
             return render_template('upload.html', count=count, sample_data=preview, count_diff=new_count,
                             msg="For uploading data from a request")
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
