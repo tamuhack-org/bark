@@ -3,7 +3,6 @@ import sys
 from pymongo.errors import BulkWriteError
 from bson.objectid import ObjectId
 
-
 class PyMongoHandler(object):
     def __init__(self, mongo_db, typeform_mapping):
         self.mongo_db = mongo_db
@@ -23,13 +22,13 @@ class PyMongoHandler(object):
 
     def _internal_save(self, data_list):
         bulk = self.mongo_db.db.applicants.initialize_unordered_bulk_op()
-        for person_data in data_list:
+        for index, person_data in enumerate(data_list):
             bulk.find({"email": person_data["email"]}).upsert().update({'$set': person_data})
         try:
             result = bulk.execute()
             return {"uploads": result["nInserted"] + result["nUpserted"], "repeats": result["nModified"]}
         except BulkWriteError as bwe:
-            print "Unexpected error:", bwe.details
+            print ("Unexpected error " + bwe.details)
 
     def _internal_delete(self, query, is_single=True):
         if is_single:
@@ -40,7 +39,6 @@ class PyMongoHandler(object):
 
     def save(self, data_list):
         list_formatted = [self.generate_document(i) for i in data_list]
-        print list_formatted
         return self._internal_save(list_formatted)
 
     def delete(self, input_dict, single=True):
@@ -54,31 +52,18 @@ class PyMongoHandler(object):
             if key in save_dict: save_dict[key] = value
         return save_dict
 
-    def get_entry(self, person_id):
-        return self.mongo_db.db.applicants.find_one({"_id":ObjectId(person_id)})
+    def get_applicant(self, query):
+        return self.mongo_db.db.applicants.find_one(query)
+    
+    def accept_applicant(self, person_id):
+        return self.mongo_db.db.applicants.update_one({"_id":ObjectId(person_id)}, {"$set":{"status": "accepted"}})
 
+    def reject_applicant(self, person_id):
+        return self.mongo_db.db.applicants.update_one({"_id":ObjectId(person_id)}, {"$set":{"status": "rejected"}})
 
-
-
-
-        # output_dict = {}
-        # # build a dictionary using the schema that is defined and fill it with provided fields
-        # for value in self.values:
-        #     if value in dict:
-        #         output_dict[value] = dict[value]
-        #     else:
-        #         output_dict[value] = ""
-        # # pass a list of one element to the internal save method
-        # return self._internal_save([output_dict])
-
-        # to_delete = self.person_db.objects(email=email)
-        # num_delete = 0
-        # if to_delete:
-        #     to_delete.delete()
-        #     num_delete = 1
-        # return {"deleted": num_delete}
+    def clear_applicant_status(self, person_id):
+        return self.mongo_db.db.applicants.update_one({"_id":ObjectId(person_id)}, {"$set":{"status": ""}})
 
     def delete_all(self):
         pass
-        # for person in self.person_db.objects():
-        #     person.delete()
+

@@ -13,16 +13,46 @@
           rel="stylesheet">
 </head>
 <body>
-<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <h2>Profile: {{ entry["first_name"] + " " + entry["last_name"] }}</h2>
+    <div class="jumbotron jumbotron-fluid">
+        <div class="container">
+            <h1 class="display-3">
+                Profile: {{ entry["first_name"] + " " + entry["last_name"] }}
+            </h1>
+            <h3><a href="/participants">All Participants</a></h3>
+        </div>
     </div>
-</div>
-<div class="container">
-    {% for key in entry.keys()|sort() %}
-        <p>{{ key|string + ": " + entry[key]|string }}</p>
-    {% endfor %}
-</div>
+    <div class="container">
+        {% for key in entry.keys()|sort() %}
+            {% if key == "resume" %}
+                <a href={{entry[key]|string}}>resume link</a>
+            {% elif key == "status" and not entry[key] %}
+                <p>{{ key|string + ": " + "not-reviewed" }}</p>
+            {% else %}
+                <p>{{ key|string + ": " + entry[key]|string }}</p>
+            {% endif %}
+        {% endfor %}
+        <br>
+        <form action="/profile" method="POST">
+            <input type="hidden" name="id" value={{entry["_id"]}} />
+            <input type="hidden" name="action" value="accept" />
+            <button type="submit" value="send" class="btn btn-primary">Accept</button>
+        </form>
+        <br>
+        <form action="/profile" method="POST">
+            <input type="hidden" name="id" value={{entry["_id"]}} />
+            <input type="hidden" name="action" value="reject" />
+            <button type="submit" value="send" class="btn btn-primary">Reject</button>
+        </form>
+        <br>
+        <form action="/profile" method="POST">
+            <input type="hidden" name="id" value={{entry["_id"]}} />
+            <input type="hidden" name="action" value="un-reviewed" />
+            <button type="submit" value="send" class="btn btn-primary">Mark as un-reviewed</button>
+        </form>
+        <br>
+        <br>
+        <br>
+    </div>
 </body>
 </html>
 

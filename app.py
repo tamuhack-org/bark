@@ -1,9 +1,8 @@
 from __future__ import print_function # In python 2.7
 from flask import Flask, render_template, request, redirect, url_for
-from resources import typeform, mongo_interface, pymongo_interface
+from resources import typeform, pymongo_interface
 from flask_pymongo import PyMongo
 import os, sys, json
-
 from bson.objectid import ObjectId
 
 """
@@ -47,7 +46,34 @@ def home_page():
     count = database.count()
     return render_template('home.html', count=count)
 
-@app.route("/modify", methods=['GET', 'POST'])
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    if request.method == 'GET':
+        person_id = request.args.get('id', None)
+        if person_id:
+            unique_person = database.get_applicant({"_id": ObjectId(person_id)}) 
+            return render_template('profile.html', entry=unique_person)
+        else:
+            unique_person = database.get_applicant({"status":""}) 
+            if not unique_person:
+                params = {"msg": "All applicants have been reviewed!"}
+                return redirect(url_for("participants", **params))
+            return render_template('profile.html', entry=unique_person)
+    if request.method == 'POST':
+        action = request.form.get('action', None)
+        person_id = request.form.get('id', None)
+        if action == "accept" and person_id:
+            database.accept_applicant(person_id)
+        elif action == "reject" and person_id:
+            database.reject_applicant(person_id)
+        elif action == "un-reviewed" and person_id:
+            database.clear_applicant_status(person_id)
+        else:
+            params = {"msg": "Incorrect parameters on profile route"}
+            return redirect(url_for('participants'), **params)
+        return redirect(url_for('profile'))
+
+@app.route("/add-delete", methods=['GET', 'POST'])
 def modify():
     if request.method == 'POST':
         if request.form['action'] == 'add':
@@ -89,7 +115,6 @@ def participants():
 def upload():
     if request.method == 'GET':
         action = request.args.get('action', None)
-        print (action)
         if action == 'upload_data':
             saved_data = database.save(parser.parse_data())
             num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
@@ -107,11 +132,6 @@ def upload():
             return render_template('upload.html', count=count, sample_data=preview, count_diff=new_count,
                             msg="For uploading data from a request")
 
-@app.route('/profile/<person_id>')
-def profile(person_id):
-    unique_person = database.get_entry(person_id) 
-    print (unique_person)
-    return render_template('profile.html', entry=unique_person)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

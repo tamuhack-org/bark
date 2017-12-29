@@ -48,7 +48,7 @@
             <tbody>
             {% for item in entries %}
                 <tr>
-                    <td><a href={{ '/profile/' + item["_id"]|string }}>{{ item["first_name"]}}</a></td>
+                    <td><a href={{ '/profile?id=' + item["_id"]|string }}>{{ item["first_name"]}}</a></td>
                     <td>{{ item["last_name"] }}</td>
                     <td>{{ item["email"] }}</td>
                     <td>

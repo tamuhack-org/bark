@@ -23,7 +23,8 @@ class Typeform_Parser(object):
     def _init_fd(self, data):
         if not self.fd_to_id:
             for elem in data["questions"]:
-                self.fd_to_id[str(elem["field_id"])] = elem["id"]
+                if str(elem["field_id"]) not in self.fd_to_id:
+                    self.fd_to_id[str(elem["field_id"])] = elem["id"]
         
     def parse_preview(self):
         data = requests.get(self.request_string).json()
