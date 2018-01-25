@@ -2,7 +2,7 @@ from __future__ import print_function # In python 2.7
 from flask import Flask, render_template, request, redirect, url_for
 from resources import typeform, pymongo_interface
 from flask_pymongo import PyMongo
-import os, sys, json
+import os, sys, json, re
 from bson.objectid import ObjectId
 
 """
@@ -48,30 +48,22 @@ def home_page():
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    if request.method == 'GET':
-        person_id = request.args.get('id', None)
-        if person_id:
-            unique_person = database.get_applicant({"_id": ObjectId(person_id)}) 
-            return render_template('profile.html', entry=unique_person)
-        else:
-            unique_person = database.get_applicant({"status":""}) 
-            if not unique_person:
-                params = {"msg": "All applicants have been reviewed!"}
-                return redirect(url_for("participants", **params))
-            return render_template('profile.html', entry=unique_person)
-    if request.method == 'POST':
-        action = request.form.get('action', None)
-        person_id = request.form.get('id', None)
-        if action == "accept" and person_id:
-            database.accept_applicant(person_id)
-        elif action == "reject" and person_id:
-            database.reject_applicant(person_id)
-        elif action == "un-reviewed" and person_id:
-            database.clear_applicant_status(person_id)
-        else:
-            params = {"msg": "Incorrect parameters on profile route"}
-            return redirect(url_for('participants'), **params)
-        return redirect(url_for('profile'))
+    person_id = request.args.get('id', None)
+    if person_id:
+        unique_person = database.get_applicant({"_id": ObjectId(person_id)}) 
+        return render_template('profile.html', entry=unique_person)
+    return redirect(url_for("participants", msg="A specific person wasn't requested"))
+
+@app.route('/profile/check-in', methods=['GET'])
+def checkin():
+    print ("oh boy its kinda working!")
+    action = request.args.get('action', "")
+    if action == "true":
+        msg = "i'm gonna check this dude in"
+        print (msg)
+    else:
+        msg = "hasn't showed up yet"
+    return redirect(url_for('participants', msg=msg))
 
 @app.route("/add-delete", methods=['GET', 'POST'])
 def modify():
@@ -98,7 +90,10 @@ def participants():
     msg = request.args.get('msg', "Displaying Search Results")
     query = request.args.get('q', "")
     query_string = ".*" + query + ".*"
-    query_phrase = {"$or":[ {"first_name" : {"$regex" : query_string}}, {"last_name" : {"$regex" : query_string}}, {"email" : {"$regex" : query_string}}]}
+    re_q = re.compile(query_string, re.IGNORECASE)
+    query_phrase = {"$or":[ {"first_name" : re_q}, 
+                            {"last_name" : re_q}, 
+                            {"email" : re_q}]}
     if not query: query_phrase = {}
     page_result = database.get_paginated_entries(page_num=page, query_phrase=query_phrase)
     context = dict(

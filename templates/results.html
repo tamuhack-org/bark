@@ -16,7 +16,7 @@
         <h1 class="display-3">Results
             <h1>
                 <p class="lead">Checked-in: {{ count }}</p>
-                <p class="lead">Not-reviewed: {{ missing_count }}</p>
+                <p class="lead">Not-reviewed: {{ count }}</p>
                 <p class="lead">Message: {{ msg }}</p>
             </h1>
         </h1>
@@ -49,7 +49,7 @@
             <tbody>
             {% for item in entries %}
                 <tr>
-                    <td><a href={{ '/profile?id=' + item["_id"]|string }}>{{ item["first_name"]}}</a></td>
+                    <td>{{ item["first_name"] }}</td>
                     <td>{{ item["last_name"] }}</td>
                     <td>{{ item["email"] }}</td>
                     <td>
@@ -58,6 +58,12 @@
                         {% else %}
                            Not Reviewed 
                         {% endif %}
+                    </td>
+                    <td>
+                        <a href={{ '/profile/check-in?action=true&id=' + item["_id"]|string }}> check-in </a>
+                    </td>
+                    <td>
+                        <a href={{ '/profile?id=' + item["_id"]|string }}> advanced... </a>
                     </td>
                 </tr>
             {% endfor %}
