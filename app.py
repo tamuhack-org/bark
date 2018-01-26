@@ -1,6 +1,6 @@
 from __future__ import print_function  # In python 2.7
 from flask import Flask, render_template, request, redirect, url_for
-from resources import typeform, pymongo_interface
+from resources import pymongo_interface
 from flask_pymongo import PyMongo
 import os
 import sys
@@ -23,6 +23,7 @@ app = Flask(__name__)
 app.config['MONGO_DBNAME'] = 'bellbird'
 mongo = PyMongo(app)
 database = pymongo_interface.PyMongoHandler(mongo)
+
 
 @app.route('/')
 def home_page():
