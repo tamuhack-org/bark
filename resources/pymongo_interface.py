@@ -4,9 +4,8 @@ from pymongo.errors import BulkWriteError
 from bson.objectid import ObjectId
 
 class PyMongoHandler(object):
-    def __init__(self, mongo_db, typeform_mapping):
+    def __init__(self, mongo_db):
         self.mongo_db = mongo_db
-        self.typeform_mapping = typeform_mapping
 
     def get_paginated_entries(self, page_size=10, page_num=1, query_phrase={}):
         entries = self.entries(query_phrase)
