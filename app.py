@@ -71,22 +71,21 @@ def update():
 @app.route("/modify", methods=['GET', 'POST'])
 def modify():
     if request.method == 'POST':
-        if request.form['action'] == 'add':
-            num_uploads, num_repeats = 0, 0
-            first_name, last_name, email = request.form[
-                'fname_add'], request.form['lname_add'], request.form['email_add']
-            if first_name and last_name and email:
-                save_dict = {"first_name": first_name,
-                             "last_name": last_name, "email": email}
-                saved_data = database.save([save_dict])
-                num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
-            output_str = "Successfully Uploaded " + \
-                str(num_uploads) + " document(s) with " + \
-                str(num_repeats) + " repeat(s)"
-        elif request.form['action'] == 'delete':
-            query = request.form['email_delete']
-            result = database.delete({"email": query}, single=True)
-            output_str = "Successfully Deleted " + str(result["deleted"])
+        num_uploads, num_repeats = 0, 0
+        submit_val = request.form.get("submit", "")
+        first_name = request.form.get("fname_add", "")
+        last_name = request.form.get("lname_add", "")
+        email = request.form.get("email_add", "")
+        if first_name and last_name and email and submit_val:
+            save_dict = {"first_name": first_name,
+                "last_name": last_name, "email": email}
+            if submit_val == "add+checkin":
+                save_dict["checked_in"] = "true"
+            saved_data = database.save([save_dict])
+            num_uploads, num_repeats = saved_data["uploads"], saved_data["repeats"]
+        output_str = "Successfully Uploaded " + \
+            str(num_uploads) + " document(s) with " + \
+            str(num_repeats) + " repeat(s)"
         return redirect(url_for('participants', msg=output_str))
     elif request.method == 'GET':
         return render_template('add_delete.html', count=database.count())

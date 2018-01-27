@@ -59,7 +59,8 @@ class PyMongoHandler(object):
                 error_string = "Missing the following value in a record: " + value
                 raise ValueError(error_string)
         for value in self.params:
-            input_dict[value] = ""
+            if value not in input_dict:
+                input_dict[value] = ""
         return input_dict
 
     def get_applicant_by_id(self, person_id):
