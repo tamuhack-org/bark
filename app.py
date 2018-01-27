@@ -38,9 +38,9 @@ def home_page():
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     person_id = request.args.get('id', None)
+    print(person_id)
     if person_id:
-        unique_person = database.get_applicant_by_id(
-            {"_id": ObjectId(person_id)})
+        unique_person = database.get_applicant_by_id(person_id)
         return render_template('profile.html', entry=unique_person)
     return redirect(url_for("participants", msg="A specific person wasn't requested"))
 
