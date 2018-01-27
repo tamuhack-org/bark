@@ -84,13 +84,17 @@
                         </td>
                         <td class="center-t">
                             <form action="/checkin" method="post">
-                                <button class="btn btn-info" name="id" value={{item["_id"]}} >Check In</button>
+                                {% if item["checked_in"] %}
+                                <button class="btn btn-info" name="id" value={{item[ "_id"]}}>Check In</button>
+                                {% else %}
+                                <button style="background-color: #ff0000" class="btn btn-info" name="id" value={{item[ "_id"]}}>Uncheck</button>
+                                {% endif %}
                             </form>
                             <form action="/checkin" method="get">
-                                <button class="btn btn-info" name="id" value={{ item["_id"] }}>Advanced</button>
+                                <button class="btn btn-info" name="id" value={{ item[ "_id"] }}>Advanced</button>
                             </form>
                             <form action="/profile" method="get">
-                                <button class="btn btn-info" name="id" value={{item["_id"]}}>Profile</button>
+                                <button class="btn btn-info" name="id" value={{item[ "_id"]}}>Profile</button>
                             </form>
                         </td>
                     </tr>
