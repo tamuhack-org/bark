@@ -48,19 +48,27 @@
         </div>
     </div>
     <br>
-    <div class="container">
-            <div class="col-lg-12 col-sm-12">
-                <div class="content-box">
-                    <div class="top-content-box red">Venue Details</div>
-                    <div class="bot-content-box">
-                        <p class="box-text">
-                            Welcome to TAMUhack Registration! Thank you for volunteering the event.
-                        </p>
-                    </div>
-                </div>
-            </div>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12 col-sm-12">
+      <form action="/checkin" method="Post">
+        <input class="form-control" name="action" value="advanced" type="hidden">
+        <input class="form-control" name="id" value="{{id}}" type="hidden">
+        <div class="form-group">
+          <input class="form-control" name="additional" placeholder="Info about the person">
+        </div>
+        <div class="form-group">
+          <input class="form-control" name="reimbursement" placeholder="Info about reimbursement">
+        </div>
+        <button type="submit" name="submit" class="btn btn-primary">Check In</button>
+      </form>
     </div>
-    <script src="{{ url_for('static', filename='js/jquery.js')}}"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
+  <hr>
+  </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
 </body>
 </html>

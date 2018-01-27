@@ -32,13 +32,6 @@
             {% endif %}
         {% endfor %}
         <br>
-        <form action="/profile/check-in" method="GET">
-            <textarea name="message" rows="10" cols="30">Put notes about attendee here...</textarea>
-            <input type="hidden" name="id" value={{entry["_id"]}} />
-            <input type="hidden" name="action" value="true" />
-            <button type="submit" value="send" class="btn btn-primary">Accept</button>
-        </form>
-        <br>
         <br>
     </div>
 </body>

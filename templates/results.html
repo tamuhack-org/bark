@@ -1,4 +1,5 @@
 <html lang="en">
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -6,9 +7,9 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>TAMUhack Registration</title>
-    <link rel="icon" href="http://getbootstrap.com/favicon.ico">
+    <!-- <link rel="icon" href="http://getbootstrap.com/favicon.ico"> -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/style.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css')}}">
 </head>
 
 <body>
@@ -22,13 +23,13 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active" href="">Welcome</a>
+                    <a class="nav-link " href="">Welcome</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/participants">Atendees</a>
+                    <a class="nav-link active" href="/participants">Atendees</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/modify">Add-Delete</a>
+                    <a class="nav-link" href="/modify">Add</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/upload">Upload</a>
@@ -48,75 +49,75 @@
     </div>
     <br>
 
-<div class="container">
-    <div class="row">
-        <form action="/participants" method="get" accept-charset="utf-8">
-            <div class="input-group">
-                <input name="q" type="text" placeholder="Search for first name, last name, and email"
-                       class="form-control" value={{ query if query }}>
-                <span class="input-group-btn">
-              <button class="btn btn-default" type="submit">Search</button>
-        </span>
-            </div>
-        </form>
-    </div>
-    <br>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Email</th>
-                <th>Status</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for item in entries %}
-                <tr>
-                    <td>{{ item["first_name"] }}</td>
-                    <td>{{ item["last_name"] }}</td>
-                    <td>{{ item["email"] }}</td>
-                    <td>
-                        {% if item["status"] %}
-                            {{item["status"]}}
-                        {% else %}
-                           Not Reviewed 
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href={{ '/profile/check-in?action=true&id=' + item["_id"]|string }}> check-in </a>
-                    </td>
-                    <td>
-                        <a href={{ '/profile?id=' + item["_id"]|string }}> advanced... </a>
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <div class="container">
+        <div class="row">
+            <form action="/participants" method="get" accept-charset="utf-8">
+                <div class="input-group">
+                    <input name="q" type="text" placeholder="Search for first name, last name, and email" class="form-control" value={{ query
+                        if query }}>
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">Search</button>
+                    </span>
+                </div>
+            </form>
+        </div>
+        <br>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th class="center-t">Option</th>
+                    </tr>
+                </thead>
+                <tbody id="screen-selector">
+                    {% for item in entries %}
+                    <tr>
+                        <td>{{ item["first_name"] }}</td>
+                        <td>{{ item["last_name"] }}</td>
+                        <td class="email">{{ item["email"] }}</td>
+                        <td>
+                            {% if item["checked_in"] %} {{item["checked_in"]}} {% else %} Not Reviewed {% endif %}
+                        </td>
+                        <td class="center-t">
+                            <form action="/checkin" method="post">
+                                <button class="btn btn-info" name="id" value={{item["_id"]}} >Check In</button>
+                            </form>
+                            <form action="/checkin" method="get">
+                                <button class="btn btn-info" name="id" value={{ item["_id"] }}>Advanced</button>
+                            </form>
+                            <form action="/profile" method="get">
+                                <button class="btn btn-info" name="id" value={{item["_id"]}}>Profile</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-    {% macro render_navigation(entries, endpoint) %}
+        {% macro render_navigation(entries, endpoint) %}
         <div>
             <ul class="pagination">
-                {% for page in range(1,num_pages+1) %}
-                    {% if page %}
-                        <li {{ '' if page != page_num else 'class="active"' | safe }}><a
-                                href="{{ url_for(endpoint, page=page, q=query) }}">{{ page }}</a></li>
-                    {% else %}
-                        <li><span class=ellipsis>…</span></li>
-                    {% endif %}
-                {% endfor %}
+                {% for page in range(1,num_pages+1) %} {% if page %}
+                <li {{ '' if page !=page_num else 'class="active"' | safe }}>
+                    <a href="{{ url_for(endpoint, page=page, q=query) }}">{{ page }}</a>
+                </li>
+                {% else %}
+                <li>
+                    <span class=ellipsis>…</span>
+                </li>
+                {% endif %} {% endfor %}
             </ul>
         </div>
-    {% endmacro %}
-
-    {{ render_navigation(entries, 'participants') }}
-</div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-
+        {% endmacro %} {{ render_navigation(entries, 'participants') }}
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='js/custom.js')}}"></script>
 </body>
-</html>
 
+</html>

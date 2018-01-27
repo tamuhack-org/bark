@@ -1,34 +1,39 @@
 from __future__ import print_function  # In python 2.7
-from flask import Flask, render_template, request, redirect, url_for
-from resources import pymongo_interface
-from flask_pymongo import PyMongo
+from StringIO import StringIO
 import os
-import sys
-import json
 import re
+from flask import Flask, render_template, request, redirect, url_for
+from flask_pymongo import PyMongo
+from resources import pymongo_interface, read_csv
 from bson.objectid import ObjectId
 
 """
 TODO:
 1) csv upload
     - for every input entry, make a key/value and don't duplicate on email
-2) make an internal save and a save method
-3) add a part of the app to add travel reimbursement amount
+2) make an internal save and a save method 3) add a part of the app to add travel reimbursement amount
 4) modal?
 """
 
 app = Flask(__name__)
+app.debug = True
 
 # testing locally
-app.config['MONGO_DBNAME'] = 'bellbird'
+app.config['MONGO_URI'] = "mongodb://tamuhack17:Tamuhackdb17@ds113826.mlab.com:13826/tamuhack_app"
+app.config['MONGO_DBNAME'] = "tamuhack_app"
 mongo = PyMongo(app)
-database = pymongo_interface.PyMongoHandler(mongo)
+
+REQUIRED_FIELDS = ["email", "first_name", "last_name"]
+ADDITIONAL_FIELDS = ["checked_in", "additional", "travel_reimbursement"]
+database = pymongo_interface.PyMongoHandler(
+    mongo, REQUIRED_FIELDS, ADDITIONAL_FIELDS)
 
 
 @app.route('/')
 def home_page():
     count = database.count()
     return render_template('home.html', count=count)
+
 
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -39,19 +44,27 @@ def profile():
     return redirect(url_for("participants", msg="A specific person wasn't requested"))
 
 
-@app.route('/profile/check-in', methods=['GET'])
-def check_in():
-    print ("oh boy its kinda working!")
-    action = request.args.get('action', "")
-    if action == "true":
-        msg = "i'm gonna check this dude in"
-        print (msg)
-    else:
-        msg = "hasn't showed up yet"
-    return redirect(url_for('participants', msg=msg))
+@app.route('/checkin', methods=["GET", "POST"])
+def update():
+    if request.method == 'POST':
+        person_id = request.form.get('id')
+        action = request.form.get('action')
+        if action == "advanced" and person_id:
+            reimbursement = request.form.get('reimbursement')
+            additional = request.form.get('additional')
+            database.update_applicant_info(
+                person_id=person_id, info_str=additional)
+            database.update_applicant_reimbursement(
+                person_id=person_id, reimbursement_str=reimbursement)
+            database.checkin_applicant(person_id=person_id)
+        elif person_id:
+            database.checkin_applicant(person_id=person_id)
+        return redirect(url_for('participants'))
+    person_id = request.args.get('id', "")
+    return render_template('checkin-info.html', id=person_id)
 
 
-@app.route("/add-delete", methods=['GET', 'POST'])
+@app.route("/modify", methods=['GET', 'POST'])
 def modify():
     if request.method == 'POST':
         if request.form['action'] == 'add':
@@ -114,12 +127,16 @@ def upload():
         elif action == 'return':
             return redirect(url_for('participants'))
         else:
-            count = database.count()
-            data = parser.parse_preview()
-            preview = data["data"]
-            new_count = data["count"]
-            return render_template('upload.html', count=count, sample_data=preview, count_diff=new_count,
-                                   msg="For uploading data from a request")
+            return render_template("upload.html")
+    if request.method == 'POST':
+        input_file = request.files['data_file']
+        if not input_file:
+            return "No file"
+        io = StringIO(input_file.stream.read())
+        csv_handler = read_csv.CsvHandler(
+            input_data=io, input_required=REQUIRED_FIELDS)
+        database.save(csv_handler.generate_documents())
+        return redirect(url_for("participants"))
 
 
 if __name__ == "__main__":
