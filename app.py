@@ -73,12 +73,16 @@ def modify():
     if request.method == 'POST':
         num_uploads, num_repeats = 0, 0
         submit_val = request.form.get("submit", "")
-        first_name = request.form.get("fname_add", "")
-        last_name = request.form.get("lname_add", "")
-        email = request.form.get("email_add", "")
-        if first_name and last_name and email and submit_val:
-            save_dict = {"first_name": first_name,
-                "last_name": last_name, "email": email}
+        save_dict = {
+            "first_name": request.form.get("fname_add", ""),
+            "last_name": request.form.get("lname_add", ""),
+            "email": request.form.get("email_add", ""),
+            "gender": request.form.get("gender", ""),
+            "school_year": request.form.get("school_year", ""),
+            "shirt_size": request.form.get("shirt_size", ""),
+            "school": request.form.get("school", "")
+        }
+        if save_dict["first_name"] and save_dict["last_name"] and save_dict["email"] and submit_val:
             if submit_val == "add+checkin":
                 save_dict["checked_in"] = "true"
             saved_data = database.save([save_dict])
@@ -162,7 +166,6 @@ def upload():
             input_data=io, input_required=REQUIRED_FIELDS)
         database.save(csv_handler.generate_documents())
         return redirect(url_for("participants"))
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

@@ -1,5 +1,4 @@
 <html lang="en">
-
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,7 +10,6 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css')}}">
 </head>
-
 <body>
     <nav class="navbar navbar-expand-md bg-light navbar-light fixed-top">
         <a class="navbar-brand" href="#">
@@ -81,7 +79,7 @@
                         <td class="email">{{ item["email"] }}</td>
                         <td>
                             <form action="/checkin" method="get">
-                                <button class="btn btn-info" name="id" value={{ item[ "_id"] }}>Advanced</button>
+                                <button class="btn btn-info" name="id" value="{{ item["_id"] }}">Advanced</button>
                             </form>
                         </td>
                         <td >

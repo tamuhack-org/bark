@@ -54,10 +54,10 @@
                 <form action="/checkin" method="Post">
                     <input class="form-control" name="id" value="{{id}}" type="hidden">
                     <div class="form-group">
-                        <input class="form-control" name="additional" placeholder="Info about the person">
+                        <input class="form-control" name="reimbursement" placeholder="Info about reimbursement">
                     </div>
                     <div class="form-group">
-                        <input class="form-control" name="reimbursement" placeholder="Info about reimbursement">
+                        <input class="form-control" name="additional" placeholder="Info about the person">
                     </div>
                     {% if not checked_in %}
                     <input class="form-control" name="action" value="checkin" type="hidden">
