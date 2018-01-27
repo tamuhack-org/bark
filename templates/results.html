@@ -93,7 +93,7 @@
                                 <button class="btn btn-info" name="id" value="{{item["_id"]}}">Check In</button>
                                 {% else %}
                                 <input class="form-control" name="action" value="uncheck" type="hidden">
-                                <button style="background-color: #ff0000" class="btn btn-info" name="id" value="{{item["_id"]}}">Uncheck</button>
+                                <button style="background-color: #ff0000" class="btn btn-info" name="id" value="{{item["_id"]}}" onclick="return confirm('Are you sure you want to uncheck {{item["first_name"]}} {{item["last_name"]}}?')">Uncheck</button>
                                 {% endif %}
                             </form>
                         </td>
