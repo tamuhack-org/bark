@@ -83,17 +83,17 @@
                         <td class="email">{{ item["email"] }}</td>
                         <td>
                             <form action="/checkin" method="get">
-                                <button class="btn btn-info" name="id" value={{ item[ "_id"] }}>Advanced</button>
+                                <button class="btn btn-info" name="id" value="{{ item[ "_id"] }}">Advanced</button>
                             </form>
                         </td>
                         <td>
                             <form action="/checkin" method="post">
                                 <input class="form-control" name="query" value="{{query if query}}" type="hidden"> {% if not item["checked_in"] %}
                                 <input class="form-control" name="action" value="checkin" type="hidden">
-                                <button class="btn btn-info" name="id" value="{{item[" _id "]}}">Check In</button>
+                                <button class="btn btn-info" name="id" value="{{item["_id"]}}">Check In</button>
                                 {% else %}
                                 <input class="form-control" name="action" value="uncheck" type="hidden">
-                                <button style="background-color: #ff0000" class="btn btn-info" name="id" value="{{item[" _id "]}}">Uncheck</button>
+                                <button style="background-color: #ff0000" class="btn btn-info" name="id" value="{{item["_id"]}}">Uncheck</button>
                                 {% endif %}
                             </form>
                         </td>
