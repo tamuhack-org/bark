@@ -48,27 +48,33 @@
         </div>
     </div>
     <br>
-<div class="container">
-  <div class="row">
-    <div class="col-lg-12 col-sm-12">
-      <form action="/checkin" method="Post">
-        <input class="form-control" name="action" value="advanced" type="hidden">
-        <input class="form-control" name="id" value="{{id}}" type="hidden">
-        <div class="form-group">
-          <input class="form-control" name="additional" placeholder="Info about the person">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12">
+                <form action="/checkin" method="Post">
+                    <input class="form-control" name="id" value="{{id}}" type="hidden">
+                    <div class="form-group">
+                        <input class="form-control" name="additional" placeholder="Info about the person">
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" name="reimbursement" placeholder="Info about reimbursement">
+                    </div>
+                    {% if not checked_in %}
+                    <input class="form-control" name="action" value="checkin" type="hidden">
+                    <button class="btn btn-info" name="id" value={{id}}>Check In</button>
+                    {% else %}
+                    <input class="form-control" name="action" value="uncheck" type="hidden">
+                    <button style="background-color: #ff0000" class="btn btn-info" name="id" value={{id}}>Uncheck</button>
+                    {% endif %}
+                </form>
+            </div>
+            <hr>
         </div>
-        <div class="form-group">
-          <input class="form-control" name="reimbursement" placeholder="Info about reimbursement">
-        </div>
-        <button type="submit" name="submit" class="btn btn-primary">Check In</button>
-      </form>
     </div>
-  <hr>
-  </div>
-</div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 </body>
+
 </html>

@@ -62,11 +62,14 @@ class PyMongoHandler(object):
             input_dict[value] = ""
         return input_dict
 
-    def get_applicant(self, query):
-        return self.mongo_db.db.applicants.find_one(query)
+    def get_applicant_by_id(self, person_id):
+        return self.mongo_db.db.applicants.find_one({"_id":ObjectId(person_id)})
     
     def checkin_applicant(self, person_id):
         return self.mongo_db.db.applicants.update_one({"_id":ObjectId(person_id)}, {"$set":{"checked_in": "true"}})
+
+    def uncheck_applicant(self, person_id):
+        return self.mongo_db.db.applicants.update_one({"_id":ObjectId(person_id)}, {"$set":{"checked_in": ""}})
 
     def update_applicant_info(self, person_id, info_str):
         return self.mongo_db.db.applicants.update_one({"_id":ObjectId(person_id)}, {"$set":{"additional": info_str}})
