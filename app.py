@@ -87,6 +87,27 @@ def modify():
     elif request.method == 'GET':
         return render_template('add_delete.html', count=database.count())
 
+def _pagination_ellipsis(currentPage, nrOfPages):
+    delta = 2
+    t_range = []
+    rangeWithDots = []
+    t_range.append(1)
+    l = None
+    if (nrOfPages <= 1):
+ 	    return t_range
+    for i in xrange(currentPage - delta, currentPage + delta+1):
+        if (i < nrOfPages and i > 1):
+            t_range.append(i)
+    t_range.append(nrOfPages)
+    for i in t_range:
+        if l:
+            if (i - l == 2):
+                rangeWithDots.append(l + 1)
+            elif (i - l != 1):
+                rangeWithDots.append('...')
+        rangeWithDots.append(i)
+        l = i
+    return rangeWithDots
 
 @app.route('/participants')
 def participants():
@@ -106,12 +127,12 @@ def participants():
         entries=page_result["entries"],
         num_pages=page_result["num_pages"],
         page_num=page_result["page_num"],
+        pagination_ellipsis = _pagination_ellipsis(page_result["page_num"], page_result["num_pages"]),
         query=query,
         msg=msg,
         count=database.count()
     )
     return render_template('results.html', **context)
-
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
