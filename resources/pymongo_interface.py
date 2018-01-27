@@ -15,8 +15,8 @@ class PyMongoHandler(object):
         cursor = entries.skip(skips).limit(page_size)
         return {"page_num":page_num, "num_pages": num_pages,"entries":[x for x in cursor]}
 
-    def count(self):
-        return self.mongo_db.db.applicants.count()
+    def checked_count(self):
+        return self.mongo_db.db.applicants.count({"checked_in": "true"})
 
     def entries(self, filter_dict={}):
         return self.mongo_db.db.applicants.find(filter_dict)

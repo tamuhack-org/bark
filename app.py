@@ -31,8 +31,7 @@ database = pymongo_interface.PyMongoHandler(
 
 @app.route('/')
 def home_page():
-    count = database.count()
-    return render_template('home.html', count=count)
+    return render_template('home.html')
 
 
 @app.route('/profile', methods=['GET', 'POST'])
@@ -96,7 +95,7 @@ def modify():
             str(num_repeats) + " repeat(s)"
         return redirect(url_for('participants', msg=output_str))
     elif request.method == 'GET':
-        return render_template('add_delete.html', count=database.count())
+        return render_template('add_delete.html', count=database.checked_count())
 
 
 def _pagination_ellipsis(currentPage, nrOfPages):
@@ -144,10 +143,8 @@ def participants():
             page_result["page_num"], page_result["num_pages"]),
         query=query,
         page=page,
-        msg=msg,
-        count=database.count()
+        count=database.checked_count()
     )
-    print (query)
     return render_template('results.html', **context)
 
 
