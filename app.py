@@ -71,6 +71,7 @@ def update():
         applicant = database.get_applicant_by_id(ObjectId(person_id))
         return render_template('checkin-info.html', id=(person_id), checked_in=applicant["checked_in"])
 
+
 @app.route("/modify", methods=['GET', 'POST'])
 def modify():
     if request.method == 'POST':
@@ -97,6 +98,7 @@ def modify():
     elif request.method == 'GET':
         return render_template('add_delete.html', count=database.count())
 
+
 def _pagination_ellipsis(currentPage, nrOfPages):
     delta = 2
     t_range = []
@@ -104,8 +106,8 @@ def _pagination_ellipsis(currentPage, nrOfPages):
     t_range.append(1)
     l = None
     if (nrOfPages <= 1):
- 	    return t_range
-    for i in xrange(currentPage - delta, currentPage + delta+1):
+        return t_range
+    for i in xrange(currentPage - delta, currentPage + delta + 1):
         if (i < nrOfPages and i > 1):
             t_range.append(i)
     t_range.append(nrOfPages)
@@ -118,6 +120,7 @@ def _pagination_ellipsis(currentPage, nrOfPages):
         rangeWithDots.append(i)
         l = i
     return rangeWithDots
+
 
 @app.route('/participants')
 def participants():
@@ -137,7 +140,8 @@ def participants():
         entries=page_result["entries"],
         num_pages=page_result["num_pages"],
         page_num=page_result["page_num"],
-        pagination_ellipsis = _pagination_ellipsis(page_result["page_num"], page_result["num_pages"]),
+        pagination_ellipsis=_pagination_ellipsis(
+            page_result["page_num"], page_result["num_pages"]),
         query=query,
         page=page,
         msg=msg,
@@ -145,6 +149,7 @@ def participants():
     )
     print (query)
     return render_template('results.html', **context)
+
 
 @app.route("/upload", methods=['GET', 'POST'])
 def upload():
