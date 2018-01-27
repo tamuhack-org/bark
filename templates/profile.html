@@ -28,7 +28,7 @@
             {% elif key == "status" and not entry[key] %}
                 <p>{{ key|string + ": " + "not-reviewed" }}</p>
             {% else %}
-                <p>{{ key|string + ": " + entry[key]|string }}</p>
+                <p>{{ key|string }}  :  <b>{{entry[key]|string }}</b></p>
             {% endif %}
         {% endfor %}
         <br>

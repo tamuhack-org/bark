@@ -38,9 +38,9 @@ def home_page():
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
     person_id = request.args.get('id', None)
+    print(person_id)
     if person_id:
-        unique_person = database.get_applicant_by_id(
-            {"_id": ObjectId(person_id)})
+        unique_person = database.get_applicant_by_id(person_id)
         return render_template('profile.html', entry=unique_person)
     return redirect(url_for("participants", msg="A specific person wasn't requested"))
 
@@ -49,6 +49,7 @@ def profile():
 def update():
     if request.method == 'POST':
         query = request.form.get('query', "")
+        page = request.form.get('page', None)
         person_id = request.form.get('id')
         action = request.form.get('action', '')
         reimbursement = request.form.get('reimbursement', '')
@@ -62,7 +63,9 @@ def update():
                 person_id=person_id, info_str=additional)
             database.update_applicant_reimbursement(
                 person_id=person_id, reimbursement_str=reimbursement)
-        return redirect(url_for('participants', q=query))
+        if not page:
+            return redirect(url_for('participants', q=query))
+        return redirect(url_for('participants', q=query, page=page))
     else:
         person_id = request.args.get('id', "")
         applicant = database.get_applicant_by_id(ObjectId(person_id))
@@ -136,6 +139,7 @@ def participants():
         page_num=page_result["page_num"],
         pagination_ellipsis = _pagination_ellipsis(page_result["page_num"], page_result["num_pages"]),
         query=query,
+        page=page,
         msg=msg,
         count=database.count()
     )
