@@ -23,13 +23,13 @@
         <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link " href="">Welcome</a>
+                    <a class="nav-link " href="/">Welcome</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="/participants">Atendees</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/modify">Add</a>
+                    <a class="nav-link" href="/modify">Add-Delete</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/upload">Upload</a>
@@ -81,7 +81,7 @@
                         <td class="email">{{ item["email"] }}</td>
                         <td>
                             <form action="/checkin" method="get">
-                                <button class="btn btn-info" name="id" value={{ item["_id"] }}>Advanced</button>
+                                <button class="btn btn-info" name="id" value={{ item[ "_id"] }}>Advanced</button>
                             </form>
                         </td>
                         <td >
@@ -101,20 +101,19 @@
                 </tbody>
             </table>
         </div>
-
         {% macro render_navigation(entries, endpoint) %}
-        <div>
-            <ul class="pagination">
-                {% for page in range(1,num_pages+1) %} {% if page %}
-                <li {{ '' if page !=page_num else 'class="active"' | safe }}>
-                    <a href="{{ url_for(endpoint, page=page, q=query) }}">{{ page }}</a>
-                </li>
-                {% else %}
-                <li>
-                    <span class=ellipsis>…</span>
-                </li>
-                {% endif %} {% endfor %}
-            </ul>
+        <div class="row">
+            <div class="container" style="display: flex; justify-content: center;">
+                <ul class="pagination">
+                    <p>
+                        {% for page in pagination_ellipsis %} {% if page != "..." %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for(endpoint, page=page, q=query) }}">{{page | string }}</a></li>
+                        {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="">...</a></li>
+                        {% endif %} {% endfor %}
+                    </p>
+                </ul>
+            </div>
         </div>
         {% endmacro %} {{ render_navigation(entries, 'participants') }}
     </div>
