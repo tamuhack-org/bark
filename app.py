@@ -39,7 +39,8 @@ def home_page():
 def profile():
     person_id = request.args.get('id', None)
     if person_id:
-        unique_person = database.get_applicant({"_id": ObjectId(person_id)})
+        unique_person = database.get_applicant_by_id(
+            {"_id": ObjectId(person_id)})
         return render_template('profile.html', entry=unique_person)
     return redirect(url_for("participants", msg="A specific person wasn't requested"))
 
@@ -47,22 +48,25 @@ def profile():
 @app.route('/checkin', methods=["GET", "POST"])
 def update():
     if request.method == 'POST':
+        query = request.form.get('query', "")
         person_id = request.form.get('id')
-        action = request.form.get('action')
-        if action == "advanced" and person_id:
-            reimbursement = request.form.get('reimbursement')
-            additional = request.form.get('additional')
+        action = request.form.get('action', '')
+        reimbursement = request.form.get('reimbursement', '')
+        additional = request.form.get('additional', '')
+        if person_id:
+            if action == "checkin":
+                database.checkin_applicant(person_id=person_id)
+            elif action == "uncheck":
+                database.uncheck_applicant(person_id=person_id)
             database.update_applicant_info(
                 person_id=person_id, info_str=additional)
             database.update_applicant_reimbursement(
                 person_id=person_id, reimbursement_str=reimbursement)
-            database.checkin_applicant(person_id=person_id)
-        elif person_id:
-            database.checkin_applicant(person_id=person_id)
-        return redirect(url_for('participants'))
-    person_id = request.args.get('id', "")
-    return render_template('checkin-info.html', id=person_id)
-
+        return redirect(url_for('participants', q=query))
+    else:
+        person_id = request.args.get('id', "")
+        applicant = database.get_applicant_by_id(ObjectId(person_id))
+        return render_template('checkin-info.html', id=(person_id), checked_in=applicant["checked_in"])
 
 @app.route("/modify", methods=['GET', 'POST'])
 def modify():
@@ -132,6 +136,7 @@ def participants():
         msg=msg,
         count=database.count()
     )
+    print (query)
     return render_template('results.html', **context)
 
 @app.route("/upload", methods=['GET', 'POST'])

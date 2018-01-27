@@ -53,8 +53,8 @@
         <div class="row">
             <form action="/participants" method="get" accept-charset="utf-8">
                 <div class="input-group">
-                    <input name="q" type="text" placeholder="Search for first name, last name, and email" class="form-control" value={{ query
-                        if query }}>
+                    <input name="q" type="text" placeholder="Search for first name, last name, and email" class="form-control" value="{{ query
+                        if query }}">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">Search</button>
                     </span>
@@ -69,8 +69,8 @@
                         <th>First Name</th>
                         <th>Last Name</th>
                         <th>Email</th>
-                        <th>Status</th>
-                        <th class="center-t">Option</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody id="screen-selector">
@@ -80,17 +80,20 @@
                         <td>{{ item["last_name"] }}</td>
                         <td class="email">{{ item["email"] }}</td>
                         <td>
-                            {% if item["checked_in"] %} {{item["checked_in"]}} {% else %} Not Reviewed {% endif %}
-                        </td>
-                        <td class="center-t">
-                            <form action="/checkin" method="post">
-                                <button class="btn btn-info" name="id" value={{item[ "_id"]}}>Check In</button>
-                            </form>
                             <form action="/checkin" method="get">
                                 <button class="btn btn-info" name="id" value={{ item[ "_id"] }}>Advanced</button>
                             </form>
-                            <form action="/profile" method="get">
-                                <button class="btn btn-info" name="id" value={{item[ "_id"]}}>Profile</button>
+                        </td>
+                        <td >
+                            <form action="/checkin" method="post">
+                                <input class="form-control" name="query" value="{{query if query}}" type="hidden">
+                                {% if not item["checked_in"] %}
+                                <input class="form-control" name="action" value="checkin" type="hidden">
+                                <button class="btn btn-info" name="id" value="{{item["_id"]}}">Check In</button>
+                                {% else %}
+                                <input class="form-control" name="action" value="uncheck" type="hidden">
+                                <button style="background-color: #ff0000" class="btn btn-info" name="id" value="{{item["_id"]}}">Uncheck</button>
+                                {% endif %}
                             </form>
                         </td>
                     </tr>
