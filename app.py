@@ -90,8 +90,6 @@ def modify():
     elif request.method == 'GET':
         return render_template('add_delete.html', count=database.count())
 
-<<<<<<< HEAD
-=======
 def _pagination_ellipsis(currentPage, nrOfPages):
     delta = 2
     t_range = []
@@ -114,7 +112,6 @@ def _pagination_ellipsis(currentPage, nrOfPages):
         l = i
     return rangeWithDots
 
->>>>>>> 39108f858b0ddc3879ac234a9aa76f042f6d27b3
 @app.route('/participants')
 def participants():
     page = int(request.args.get('page', 1))
